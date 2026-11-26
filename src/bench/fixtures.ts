@@ -7,6 +7,7 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative, resolve, sep } from 'node:path';
 import { analyzerForKind } from '../analyzers';
+import { decodeText } from '../io/decode';
 import { LANGS } from '../model/kinds';
 import type { DiagramModel, Lang, SourceFile } from '../model/types';
 import { type CaseScore, compareModel } from './compare';
@@ -45,12 +46,6 @@ export function hasPrivateFixtures(lang?: Lang, root = projectRoot()): boolean {
   return existsSync(lang ? join(root, PRIVATE_ROOT, lang) : join(root, PRIVATE_ROOT));
 }
 
-function looksBinary(buf: Buffer): boolean {
-  const n = Math.min(buf.length, 8000);
-  for (let i = 0; i < n; i++) if (buf[i] === 0) return true;
-  return false;
-}
-
 async function readInputs(inputDir: string, problems: string[]): Promise<SourceFile[]> {
   const out: SourceFile[] = [];
   const walk = async (dir: string) => {
@@ -68,9 +63,9 @@ async function readInputs(inputDir: string, problems: string[]): Promise<SourceF
         problems.push(`skipped ${e.name}: larger than 5 MB`);
         continue;
       }
-      const buf = await readFile(full);
-      if (looksBinary(buf)) continue;
-      out.push({ path: relative(inputDir, full).split(sep).join('/'), content: buf.toString('utf8') });
+      const content = decodeText(await readFile(full));
+      if (content === undefined) continue;
+      out.push({ path: relative(inputDir, full).split(sep).join('/'), content });
     }
   };
   if (existsSync(inputDir)) await walk(inputDir);
