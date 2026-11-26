@@ -7,7 +7,7 @@ nodes:
     attributes: [RED, BLUE, GREEN, YELLOW]
   - name: Position
     kind: record
-    attributes: ['- row: int', '- col: int']
+    attributes: ['- row: int {readOnly}', '- col: int {readOnly}']
     operations: ['+ offset(dr: int, dc: int): Position', '+ distance(other: Position): int']
   - name: Movable
     kind: interface
@@ -54,12 +54,12 @@ edges:
   - { kind: generalization, from: Knight, to: Piece }
   - { kind: aggregation, from: Piece, to: Color, role: color, multiplicity: '1' }
   - { kind: aggregation, from: Piece, to: Position, role: position, multiplicity: '1' }
-  - { kind: aggregation, from: Board, to: Piece, role: pieces, multiplicity: '*' }
+  - { kind: aggregation, from: Board, to: Piece, role: pieces, multiplicity: '0..*' }
   - { kind: composition, from: Board, to: Board.Dice, role: dice, multiplicity: '1' }
   - { kind: nesting, from: Board.Dice, to: Board }
   - { kind: aggregation, from: Player, to: Piece, role: piece, multiplicity: '1' }
   - { kind: composition, from: Game, to: Board, role: board, multiplicity: '1' }
-  - { kind: composition, from: Game, to: Player, role: players, multiplicity: '*' }
+  - { kind: composition, from: Game, to: Player, role: players, multiplicity: '0..*' }
 notes: >-
   Board.Dice is a non-static inner class, created in Board's constructor (composition, 1). Game's
   constructor creates the Board and fills the Player[] array with new Player(...), so both are

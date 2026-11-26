@@ -52,11 +52,11 @@ edges:
     multiplicity: '0..1'
     fromRole: occupant
     fromMultiplicity: '0..1'
-  - { kind: composition, from: Workshop, to: Bay, role: bays, multiplicity: '*' }
-  - { kind: composition, from: Workshop, to: RepairOrder, role: orders, multiplicity: '*' }
+  - { kind: composition, from: Workshop, to: Bay, role: bays, multiplicity: '0..*' }
+  - { kind: composition, from: Workshop, to: RepairOrder, role: orders, multiplicity: '0..*' }
   - { kind: aggregation, from: RepairOrder, to: Vehicle, role: vehicle, multiplicity: '1' }
   - { kind: association, from: RepairOrder, to: Status, role: status, multiplicity: '1' }
-  - { kind: composition, from: RepairOrder, to: RepairOrder.Task, role: tasks, multiplicity: '*' }
+  - { kind: composition, from: RepairOrder, to: RepairOrder.Task, role: tasks, multiplicity: '0..*' }
   - { kind: nesting, from: RepairOrder.Task, to: RepairOrder }
 notes: >-
   Car.bay and Bay.occupant are reciprocal package-private fields, linked by Workshop.checkIn and set

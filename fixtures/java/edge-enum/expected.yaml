@@ -8,7 +8,7 @@ nodes:
   - name: Prioridade
     kind: enum
     stereotypes: [enumeration]
-    attributes: [BAIXA, MEDIA, ALTA, '- peso: int', '- rotulo: String']
+    attributes: [BAIXA, MEDIA, ALTA, '- peso: int {readOnly}', '- rotulo: String {readOnly}']
     operations:
       - '- Prioridade(peso: int, rotulo: String)'
       - '+ urgente(): boolean'
@@ -16,7 +16,7 @@ nodes:
       - '+ comparar(outra: Prioridade): int'
   - name: Tarefa
     kind: class
-    attributes: ['- titulo: String', '- prioridade: Prioridade', '- estado: Estado']
+    attributes: ['- titulo: String {readOnly}', '- prioridade: Prioridade', '- estado: Estado']
     operations: ['+ Tarefa(titulo: String)', '+ escalar(nova: Prioridade): void', '+ avancar(): void']
   - name: Tarefa.Estado
     kind: enum

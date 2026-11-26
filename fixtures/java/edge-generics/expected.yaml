@@ -4,8 +4,8 @@ nodes:
   - name: Loja
     kind: class
     attributes:
-      - '- porCliente: Map<String, List<Pedido>>'
-      - '- ultimo: Map<Cliente, Pedido>'
+      - '- porCliente: Map<String, List<Pedido>> {readOnly}'
+      - '- ultimo: Map<Cliente, Pedido> {readOnly}'
       - '- catalogo: List<? extends Produto>'
       - '- devolvidos: List<? super Produto>'
       - '- etiquetas: Set<?>'
@@ -16,7 +16,7 @@ nodes:
     operations: ['+ registar(cliente: Cliente, pedido: Pedido): void', '+ embalar(p: Produto): void']
   - name: Pedido
     kind: class
-    attributes: ['- numero: int']
+    attributes: ['- numero: int {readOnly}']
     operations: ['+ Pedido(numero: int)']
   - name: Cliente
     kind: class
@@ -24,16 +24,16 @@ nodes:
     kind: class
   - name: Caixa
     kind: class
-    attributes: ['- conteudo: T']
+    attributes: ['- conteudo: T {readOnly}']
     operations: ['+ Caixa(conteudo: T)']
 edges:
-  - { kind: association, from: Loja, to: Pedido, role: porCliente, multiplicity: '*' }
-  - { kind: aggregation, from: Loja, to: Pedido, role: ultimo, multiplicity: '*' }
-  - { kind: aggregation, from: Loja, to: Produto, role: catalogo, multiplicity: '*' }
+  - { kind: association, from: Loja, to: Pedido, role: porCliente, multiplicity: '0..*' }
+  - { kind: aggregation, from: Loja, to: Pedido, role: ultimo, multiplicity: '0..*' }
+  - { kind: aggregation, from: Loja, to: Produto, role: catalogo, multiplicity: '0..*' }
   - { kind: association, from: Loja, to: Cliente, role: vip, multiplicity: '0..1' }
-  - { kind: association, from: Loja, to: Produto, role: promocoes, multiplicity: '*' }
-  - { kind: association, from: Loja, to: Produto, role: prateleiras, multiplicity: '*' }
-  - { kind: composition, from: Loja, to: Caixa, role: caixas, multiplicity: '*' }
+  - { kind: association, from: Loja, to: Produto, role: promocoes, multiplicity: '0..*' }
+  - { kind: association, from: Loja, to: Produto, role: prateleiras, multiplicity: '0..*' }
+  - { kind: composition, from: Loja, to: Caixa, role: caixas, multiplicity: '0..*' }
 notes: >-
   porCliente holds Pedido as the element of a list that is a Map value (Map<String, List<Pedido>>);
   nothing stores a Pedido in it directly, so it is an association with "*". ultimo is a Map whose value

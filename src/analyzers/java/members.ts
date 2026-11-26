@@ -65,10 +65,37 @@ export function attributeOf(f: JField): Member {
   if (f.enumConstant) return { name: f.name, ref: f.ref };
   const flags: MemberFlag[] = [];
   if (f.mods.isStatic) flags.push('static');
-  if (f.mods.isFinal) flags.push('final');
+  // Record components are implicitly final.
+  if (f.mods.isFinal || f.component) flags.push('final');
   const m: Member = { name: f.name, type: f.type, visibility: f.visibility, ref: f.ref };
+  const initial = f.mods.isStatic ? literalText(f.value) : undefined;
+  if (initial !== undefined) m.initial = initial;
   if (flags.length) m.flags = flags;
   return m;
+}
+
+const LITERALS = new Set([
+  'decimal_integer_literal',
+  'hex_integer_literal',
+  'octal_integer_literal',
+  'binary_integer_literal',
+  'decimal_floating_point_literal',
+  'hex_floating_point_literal',
+  'character_literal',
+  'string_literal',
+  'true',
+  'false',
+]);
+
+/** The text of a simple literal initializer (`1`, `-0.5`, `"pt"`), or undefined for anything else. */
+function literalText(value: Node | null): string | undefined {
+  const v = unparen(value);
+  if (!v) return undefined;
+  if (v.type === 'unary_expression' && /^[-+]$/.test(v.childForFieldName('operator')?.text ?? '')) {
+    const arg = unparen(v.childForFieldName('operand'));
+    return arg && /_literal$/.test(arg.type) && arg.type !== 'string_literal' ? v.text.replace(/\s+/g, '') : undefined;
+  }
+  return LITERALS.has(v.type) && !v.text.includes('\n') ? v.text : undefined;
 }
 
 export function operationOf(m: JMethod, t: JType): Member {

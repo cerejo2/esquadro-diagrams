@@ -5,7 +5,7 @@ options:
 nodes:
   - name: Agenda
     kind: class
-    attributes: ['- eventos: List<Evento>', '- fabrica: Supplier<Lembrete>', '- porData: Comparator<Evento>']
+    attributes: ['- eventos: List<Evento> {readOnly}', '- fabrica: Supplier<Lembrete> {readOnly}', '- porData: Comparator<Evento> {readOnly}']
     operations: ['+ importar(linhas: List<String>): void', '+ exportar(): void']
   - name: Evento
     kind: class
@@ -21,7 +21,7 @@ nodes:
     stereotypes: [interface]
     operations: ['+ visitar(etiqueta: Etiqueta): void']
 edges:
-  - { kind: composition, from: Agenda, to: Evento, role: eventos, multiplicity: '*' }
+  - { kind: composition, from: Agenda, to: Evento, role: eventos, multiplicity: '0..*' }
   - { kind: dependency, from: Agenda, to: Lembrete }
   - { kind: dependency, from: Agenda, to: Conversor }
   - { kind: dependency, from: Agenda, to: Formato }

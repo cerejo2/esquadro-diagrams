@@ -9,19 +9,19 @@ nodes:
     operations: ['+ area(): double']
   - name: Ponto
     kind: record
-    attributes: ['- x: double', '- y: double', '+ ORIGEM: Ponto']
+    attributes: ['- x: double {readOnly}', '- y: double {readOnly}', '+ ORIGEM: Ponto {readOnly}']
     operations: []
   - name: Circulo
     kind: record
-    attributes: ['- centro: Ponto', '- raio: double']
+    attributes: ['- centro: Ponto {readOnly}', '- raio: double {readOnly}']
     operations: ['+ Circulo(centro: Ponto, raio: double)', '+ unitario(): Circulo', '+ area(): double']
   - name: Retangulo
     kind: record
-    attributes: ['- canto: Ponto', '- largura: double', '- altura: double']
+    attributes: ['- canto: Ponto {readOnly}', '- largura: double {readOnly}', '- altura: double {readOnly}']
     operations: ['+ Retangulo(canto: Ponto, largura: double, altura: double)', '+ area(): double']
   - name: Poligono
     kind: class
-    attributes: ['# vertices: List<Ponto>']
+    attributes: ['# vertices: List<Ponto> {readOnly}']
     operations: ['+ Poligono(vs: List<Ponto>)', '+ area(): double']
   - name: Triangulo
     kind: class
@@ -38,7 +38,7 @@ edges:
   - { kind: composition, from: Ponto, to: Ponto, role: ORIGEM, multiplicity: '1' }
   - { kind: aggregation, from: Circulo, to: Ponto, role: centro, multiplicity: '1' }
   - { kind: aggregation, from: Retangulo, to: Ponto, role: canto, multiplicity: '1' }
-  - { kind: aggregation, from: Poligono, to: Ponto, role: vertices, multiplicity: '*' }
+  - { kind: aggregation, from: Poligono, to: Ponto, role: vertices, multiplicity: '0..*' }
   - { kind: dependency, from: Triangulo, to: Ponto }
   - { kind: dependency, from: Geometria, to: Forma }
   - { kind: dependency, from: Geometria, to: Circulo }

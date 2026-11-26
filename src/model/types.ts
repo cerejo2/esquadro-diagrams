@@ -45,6 +45,7 @@ export interface Member {
   visibility?: '+' | '-' | '#' | '~';
   params?: { name: string; type?: string }[]; // só operações
   returns?: string;
+  initial?: string; // valor inicial de um atributo estático, já em texto: '1', '"pt"'
   flags?: MemberFlag[];
   ref?: SourceRef;
 }

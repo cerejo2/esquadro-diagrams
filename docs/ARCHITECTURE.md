@@ -53,8 +53,12 @@ The production build silences one expected warning: Emscripten output in `web-tr
 
 - `collect.ts` walks every file once and records each type (class, interface, enum, record, nested types) with its fields, methods and supertypes. `ast.ts` holds the small helpers for reading type names, generic arguments and modifiers.
 - `resolve.ts` maps a simple name to a project type by looking, in order, at type parameters, member types (own, enclosing and inherited), explicit imports, the same package and `import pkg.*`. Names that match several types become a warning instead of a guess, and JDK types never become nodes.
-- `relations.ts` applies the field rules of PROMPT.md §7.1. Composition when the class creates the object (`new` in the declaration, a constructor or an initializer, or `add(new T(...))`); aggregation when it receives it (a constructor or setter parameter, or `add(p)`); association otherwise. It also lists every type use (parameters, locals, `new`, static access, casts, patterns) for the dependency edges.
+- `relations.ts` applies the field rules of PROMPT.md §7.1. Composition when the class creates the object (`new` or a copy it makes with `copy()`/`clone()`, in the declaration, a constructor or an initializer, or `add(new T(...))` anywhere); aggregation when it receives it (a constructor or setter parameter, or `add(p)`); association otherwise. Collections have multiplicity `0..*`. It also lists every type use (parameters, locals, `new`, static access, casts, patterns) for the dependency edges.
 - `build.ts` builds `java.class`, `java.package` and `java.dependency`. Reciprocal plain associations merge into one edge, a class that only holds `main` is left out, and dependencies are hidden by default (`showDependencies`).
+
+Attributes follow Visual Paradigm: `- name: Type = initial {readOnly}`. Final fields and record components are `{readOnly}`; only static fields with a plain literal show `= initial`.
+
+These house conventions were chosen against the course references, which disagree with each other: `0..*` for collections and `{readOnly}` follow the references, and a stored copy counts as a composition.
 
 Every node and edge carries evidence (the rule and `file:line`), so the UI can explain why an arrow exists. Ancestor lookups are iterative and cached, because a recursive walk overflowed the stack on a 3000-class inheritance chain.
 

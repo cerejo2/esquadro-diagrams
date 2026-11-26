@@ -51,13 +51,13 @@ describe('public Java fixtures', () => {
 
 /** Differences every PDS reference shares with §7.1, accepted in all private cases. */
 const CONVENTIONS: [RegExp, string][] = [
-  [/multiplicity "0\.\.\*" but got "\*"/, '§7.1 writes collections as "*"; the references write "0..*"'],
   [/^extra edge dependency:/, 'the references draw only some of the dependencies the code has'],
 ];
 
 /**
- * Member strings that differ only by what the Member contract cannot carry:
- * initial values (`= 1`), `{readOnly}`/`{final}` and raw generic types (`List`).
+ * Member strings that differ only by notation: initial values the analyzer does not
+ * print (`= 0` on an instance field), `{final}` where we write `{readOnly}`, and raw
+ * generic types (`List`).
  */
 const strip = (s: string) =>
   s

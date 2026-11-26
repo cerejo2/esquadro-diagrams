@@ -6,22 +6,22 @@ nodes:
   - name: Relatório
     kind: class
     attributes:
-      - '- título: String'
-      - '- secções: List<Secção>'
-      - '- modelo: String'
-      - '- aspas: char'
-      - '- bloco: String'
+      - '- título: String {readOnly}'
+      - '- secções: List<Secção> {readOnly}'
+      - '- modelo: String {readOnly}'
+      - '- aspas: char {readOnly}'
+      - '- bloco: String {readOnly}'
     operations: ['+ Relatório(título: String)', '+ acrescentar(nome: String): void', '+ páginas(): int']
   - name: Secção
     kind: class
-    attributes: ['- nome: String']
+    attributes: ['- nome: String {readOnly}']
     operations: ['~ Secção(nome: String)']
   - name: Órgão
     kind: class
     attributes: []
     operations: ['- Órgão()', '~ contar(lista: List<Secção>): int']
 edges:
-  - { kind: composition, from: Relatório, to: Secção, role: secções, multiplicity: '*' }
+  - { kind: composition, from: Relatório, to: Secção, role: secções, multiplicity: '0..*' }
   - { kind: dependency, from: Relatório, to: Órgão }
   - { kind: dependency, from: Órgão, to: Secção }
 notes: >-

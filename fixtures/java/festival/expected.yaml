@@ -25,7 +25,7 @@ nodes:
     operations: ['+ Slot(item: T, start: int, minutes: int)', '+ end(): int', '+ overlaps(from: int, to: int): boolean']
   - name: Volunteer
     kind: record
-    attributes: ['- name: String', '- phone: String']
+    attributes: ['- name: String {readOnly}', '- phone: String {readOnly}']
     operations: []
   - name: Stage
     kind: class
@@ -47,9 +47,9 @@ edges:
   - { kind: realization, from: Act, to: Schedulable }
   - { kind: generalization, from: Concert, to: Act }
   - { kind: generalization, from: Talk, to: Act }
-  - { kind: composition, from: Stage, to: Slot, role: slots, multiplicity: '*' }
-  - { kind: aggregation, from: Stage, to: Volunteer, role: crew, multiplicity: '*' }
-  - { kind: composition, from: Festival, to: Stage, role: stages, multiplicity: '*' }
+  - { kind: composition, from: Stage, to: Slot, role: slots, multiplicity: '0..*' }
+  - { kind: aggregation, from: Stage, to: Volunteer, role: crew, multiplicity: '0..*' }
+  - { kind: composition, from: Festival, to: Stage, role: stages, multiplicity: '0..*' }
   - { kind: dependency, from: Stage, to: Act }
   - { kind: dependency, from: Festival, to: TicketType }
 notes: >-

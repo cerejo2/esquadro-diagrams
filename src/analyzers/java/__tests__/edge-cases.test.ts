@@ -215,8 +215,8 @@ describe('comments and strings', () => {
     expect(edgeList(m)).toEqual([
       'generalization A->Base',
       'realization A->I',
-      'association A->B bs *',
-      'association A->B porNome *',
+      'association A->B bs 0..*',
+      'association A->B porNome 0..*',
     ]);
   });
 });
@@ -384,13 +384,13 @@ describe('types and members', () => {
         'class Item {}',
       ].join('\n'),
     });
-    expect(attrs(m, 'Par')).toEqual(['- a: A', '- item: Item', '- itens: List<Item>']);
+    expect(attrs(m, 'Par')).toEqual(['- a: A {readOnly}', '- item: Item {readOnly}', '- itens: List<Item> {readOnly}']);
     expect(ops(m, 'Par')).toEqual([
       '+ Par(a: A, item: Item, itens: List<Item>)',
       '+ Par(item: Item)',
       '+ de(t: T): Par<T>',
     ]);
-    expect(edgeList(m)).toEqual(['aggregation Par->Item item 1', 'aggregation Par->Item itens *']);
+    expect(edgeList(m)).toEqual(['aggregation Par->Item item 1', 'aggregation Par->Item itens 0..*']);
   });
 
   it('a parameterised outer type still names the inner class', async () => {
@@ -516,8 +516,8 @@ describe('a generated project with 300 files', () => {
     const target = name((10 * 7 + 3) % 300);
     const toTarget = m.edges.filter((e) => e.from.node === 'class:gerado.p0.C10' && e.to.node.endsWith(`.${target}`));
     expect(toTarget.map((e) => `${e.kind} ${e.to.role} ${e.to.multiplicity}`)).toEqual([
-      'aggregation itens *',
-      'association indice *',
+      'aggregation itens 0..*',
+      'association indice 0..*',
     ]);
   });
 });

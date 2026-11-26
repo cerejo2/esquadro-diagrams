@@ -288,6 +288,14 @@ function fieldWrites(t: JType, units: CodeUnit[]): Write[] {
 
 type ValueClass = 'create' | 'param' | 'null' | 'other';
 
+const COPY_METHODS = new Set(['copy', 'clone']);
+
+/** `x.copy()`, `x.copy(name)` or `x.clone()`, possibly cast: `(Robot) r.clone()`. */
+function isCopy(v: Node): boolean {
+  const e = v.type === 'cast_expression' ? unparen(v.childForFieldName('value')) : v;
+  return e?.type === 'method_invocation' && COPY_METHODS.has(e.childForFieldName('name')?.text ?? '');
+}
+
 function classify(w: Write, target: JType, res: Resolver, ctx: JType): ValueClass {
   const v = unparen(w.value);
   if (!v) return 'other';
@@ -299,6 +307,10 @@ function classify(w: Write, target: JType, res: Resolver, ctx: JType): ValueClas
     // Element adds (`add(new T(...))`) count wherever they are.
     const allowed = w.element || w.unit.kind !== 'method';
     return created && allowed && res.isSubtype(created, target) ? 'create' : 'other';
+  }
+  if (isCopy(v)) {
+    // A copy the class makes itself (`add(robot.copy())`) is created here, like `new`.
+    return w.element || w.unit.kind !== 'method' ? 'create' : 'other';
   }
   if (v.type === 'identifier' && w.unit.params.has(v.text) && !w.unit.locals.has(v.text)) {
     // `this.f = p` counts in a constructor or a setter; `add(p)`, `f[i] = p` and `put(k, p)` in any method.
@@ -353,7 +365,7 @@ export function fieldRelations(t: JType, res: Resolver): FieldRelation[] {
 
     let multiplicity: string;
     if (ft.cardinality === 'many') {
-      multiplicity = '*';
+      multiplicity = '0..*';
       ev.push(evidence('java.multiplicity.many', f.ref, `${ft.container} of ${ft.target.name}`));
     } else if (ft.cardinality === 'optional') {
       multiplicity = '0..1';

@@ -3,11 +3,11 @@ source: original
 nodes:
   - name: Biblioteca
     kind: class
-    attributes: ['- livros: List<Livro>']
+    attributes: ['- livros: List<Livro> {readOnly}']
     operations: ['+ adicionar(livro: Livro): void', '+ contar(): int']
   - name: Livro
     kind: class
-    attributes: ['- titulo: String', '- autor: Autor']
+    attributes: ['- titulo: String {readOnly}', '- autor: Autor']
     operations: ['+ Livro(titulo: String)']
   - name: Autor
     kind: class
@@ -17,7 +17,7 @@ nodes:
     attributes: ['- livro: Livro']
     operations: ['+ ler(): void']
 edges:
-  - { kind: aggregation, from: Biblioteca, to: Livro, role: livros, multiplicity: '*' }
+  - { kind: aggregation, from: Biblioteca, to: Livro, role: livros, multiplicity: '0..*' }
   - { kind: composition, from: Livro, to: Autor, role: autor, multiplicity: '1' }
   - { kind: association, from: Truncado, to: Livro, role: livro, multiplicity: '1' }
 notes: >-

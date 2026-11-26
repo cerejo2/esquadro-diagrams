@@ -18,7 +18,7 @@ nodes:
     operations: ['+ Magazine(title: String, year: int, issue: int)', '+ describe(): String']
   - name: Author
     kind: record
-    attributes: ['- name: String', '- country: String']
+    attributes: ['- name: String {readOnly}', '- country: String {readOnly}']
     operations: ['+ initials(): String']
   - name: Catalog
     kind: class
@@ -45,10 +45,10 @@ nodes:
 edges:
   - { kind: generalization, from: Book, to: Item }
   - { kind: generalization, from: Magazine, to: Item }
-  - { kind: aggregation, from: Book, to: Author, role: authors, multiplicity: '*' }
-  - { kind: aggregation, from: Catalog, to: Item, role: items, multiplicity: '*' }
+  - { kind: aggregation, from: Book, to: Author, role: authors, multiplicity: '0..*' }
+  - { kind: aggregation, from: Catalog, to: Item, role: items, multiplicity: '0..*' }
   - { kind: aggregation, from: Desk, to: Catalog, role: catalog, multiplicity: '1' }
-  - { kind: composition, from: Desk, to: Loan, role: loans, multiplicity: '*' }
+  - { kind: composition, from: Desk, to: Loan, role: loans, multiplicity: '0..*' }
   - { kind: aggregation, from: Loan, to: Item, role: item, multiplicity: '1' }
   - { kind: aggregation, from: Loan, to: Member, role: member, multiplicity: '1' }
 notes: >-

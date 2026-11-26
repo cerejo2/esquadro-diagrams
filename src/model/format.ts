@@ -1,10 +1,13 @@
 // Text forms of members, shared by the renderer, the exporters and the bench.
 import type { Member } from './types';
 
-/** `+ name: Type` (attribute) in Visual Paradigm style. */
+/** `+ name: Type = initial {readOnly}` (attribute) in Visual Paradigm style; final fields are {readOnly}. */
 export function formatAttribute(m: Member): string {
   const vis = m.visibility ? `${m.visibility} ` : '';
-  return m.type ? `${vis}${m.name}: ${m.type}` : `${vis}${m.name}`;
+  const type = m.type ? `: ${m.type}` : '';
+  const initial = m.initial !== undefined ? ` = ${m.initial}` : '';
+  const readOnly = m.flags?.includes('final') ? ' {readOnly}' : '';
+  return `${vis}${m.name}${type}${initial}${readOnly}`;
 }
 
 /** `+ name(p: Type, q: Type): Return`; constructors have no return type. */

@@ -70,7 +70,13 @@ describe('members', () => {
           int h() { return 0; }
         }`,
     });
-    expect(attrs(m, 'A')).toEqual(['- a: int', '# b: String', '+ c: List<String>', '~ d: long', '~ K: int']);
+    expect(attrs(m, 'A')).toEqual([
+      '- a: int',
+      '# b: String',
+      '+ c: List<String>',
+      '~ d: long',
+      '~ K: int = 1 {readOnly}',
+    ]);
     expect(ops(m, 'A')).toEqual([
       '+ A(a: int)',
       '- f(x: int, rest: String...): void',
@@ -82,6 +88,33 @@ describe('members', () => {
     expect(a.attributes![4]!.flags).toEqual(['static', 'final']);
   });
 
+  it('final fields are {readOnly}; static fields show a simple literal initial value', async () => {
+    const m = await analyze({
+      'A.java': `class A {
+          private static int nextId = 1;
+          static final double MIN = -0.5;
+          public static final String LANG = "pt";
+          static final char SEP = ';';
+          static boolean on = true;
+          static final java.util.List<String> NAMES = java.util.List.of();
+          static int total = 2 + 3;
+          private final int id = 7;
+          static String nothing = null;
+        }`,
+    });
+    expect(attrs(m, 'A')).toEqual([
+      '- nextId: int = 1',
+      '~ MIN: double = -0.5 {readOnly}',
+      '+ LANG: String = "pt" {readOnly}',
+      "~ SEP: char = ';' {readOnly}",
+      '~ on: boolean = true',
+      '~ NAMES: List<String> {readOnly}',
+      '~ total: int',
+      '- id: int {readOnly}',
+      '~ nothing: String',
+    ]);
+  });
+
   it('marks static and abstract operations, and interface methods are public', async () => {
     const m = await analyze({
       'A.java': `abstract class A { abstract void run(); static A make() { return null; } }
@@ -90,7 +123,7 @@ describe('members', () => {
     expect(node(m, 'A').operations!.map((o) => o.flags)).toEqual([['abstract'], ['static']]);
     expect(ops(m, 'I')).toEqual(['+ go(): void', '+ n(): int']);
     expect(node(m, 'I').operations![0]!.flags).toEqual(['abstract']);
-    expect(attrs(m, 'I')).toEqual(['+ LIMIT: int']);
+    expect(attrs(m, 'I')).toEqual(['+ LIMIT: int = 3 {readOnly}']);
   });
 
   it('hides trivial getters and setters, main, toString, equals and hashCode by default', async () => {
@@ -126,9 +159,9 @@ describe('members', () => {
       'E.java': `enum E { A(1), B(2); private final int v; E(int v) { this.v = v; } int v() { return v; } }
         record R(String name, int age) { R { if (age < 0) throw new IllegalArgumentException(); } String hi() { return name; } }`,
     });
-    expect(attrs(m, 'E')).toEqual(['A', 'B', '- v: int']);
+    expect(attrs(m, 'E')).toEqual(['A', 'B', '- v: int {readOnly}']);
     expect(ops(m, 'E')).toEqual(['- E(v: int)', '~ v(): int']);
-    expect(attrs(m, 'R')).toEqual(['- name: String', '- age: int']);
+    expect(attrs(m, 'R')).toEqual(['- name: String {readOnly}', '- age: int {readOnly}']);
     expect(ops(m, 'R')).toEqual(['~ R(name: String, age: int)', '~ hi(): String']);
   });
 });
@@ -163,11 +196,27 @@ describe('relations', () => {
           void more() { ss.add(new S()); }
         }`,
     });
-    expect(edgeList(m)).toEqual(['composition A->P p 1', 'composition A->Q q 1', 'composition A->S ss *']);
+    expect(edgeList(m)).toEqual(['composition A->P p 1', 'composition A->Q q 1', 'composition A->S ss 0..*']);
     const c = edge(m, 'composition', 'A', 'Q')!;
     expect(c.confidence).toBeLessThan(1);
     expect(c.evidence.map((e) => e.rule)).toEqual(['java.field', 'java.field.creates']);
     expect(c.evidence[1]!.ref).toEqual({ file: 'A.java', line: 7 });
+  });
+
+  it('a copy the class makes itself (copy, clone) is a composition, like new', async () => {
+    const m = await analyze({
+      'A.java': `import java.util.*;
+        class P { P copy(String n) { return new P(); } } class Q implements Cloneable { public Q clone() { return new Q(); } }
+        class S { S copy() { return new S(); } }
+        class A {
+          private List<P> ps = new ArrayList<>(); private Map<String, Q> qs = new HashMap<>(); private S s;
+          void add(P p) { ps.add(p.copy("x")); }
+          void put(String k, Q q) { qs.put(k, (Q) q.clone()); }
+          void later(S other) { s = other.copy(); }
+        }`,
+    });
+    // A direct write in an ordinary method is not a composition, as with `new`.
+    expect(edgeList(m)).toEqual(['composition A->P ps 0..*', 'composition A->Q qs 0..*', 'association A->S s 1']);
   });
 
   it('aggregation when the value comes from a constructor or setter parameter, or add(p)', async () => {
@@ -185,8 +234,8 @@ describe('relations', () => {
     expect(edgeList(m)).toEqual([
       'aggregation A->P p 1',
       'aggregation A->Q q 1',
-      'aggregation A->S ss *',
-      'aggregation A->T ts *',
+      'aggregation A->S ss 0..*',
+      'aggregation A->T ts 0..*',
     ]);
   });
 
@@ -223,7 +272,7 @@ describe('relations', () => {
     expect(edgeList(m)).toContain('composition A->V v 1');
   });
 
-  it('multiplicity: 1, 0..1 for Optional or a null assignment, * for arrays and collections', async () => {
+  it('multiplicity: 1, 0..1 for Optional or a null assignment, 0..* for arrays and collections', async () => {
     const m = await analyze({
       'A.java': `import java.util.*; import java.util.concurrent.CopyOnWriteArrayList;
         class T {}
@@ -237,15 +286,15 @@ describe('relations', () => {
       'association A->T one 1',
       'association A->T maybe 0..1',
       'association A->T opt 0..1',
-      'association A->T arr *',
-      'association A->T old *',
-      'association A->T set *',
-      'association A->T q *',
-      'association A->T dq *',
-      'association A->T col *',
-      'association A->T map *',
-      'association A->T cow *',
-      'association A->T wild *',
+      'association A->T arr 0..*',
+      'association A->T old 0..*',
+      'association A->T set 0..*',
+      'association A->T q 0..*',
+      'association A->T dq 0..*',
+      'association A->T col 0..*',
+      'association A->T map 0..*',
+      'association A->T cow 0..*',
+      'association A->T wild 0..*',
     ]);
     // A collection type outside the §7.1 list is read by its name, with lower confidence.
     const cow = m.edges.find((e) => e.to.role === 'cow')!;
@@ -254,19 +303,19 @@ describe('relations', () => {
     expect(cow.evidence.map((e) => e.rule)).toContain('java.multiplicity.container');
   });
 
-  it('fills an array with new in the constructor: composition with *', async () => {
+  it('fills an array with new in the constructor: composition with 0..*', async () => {
     const m = await analyze({
       'A.java':
         'class B {} class A { B[] bs; A(int n) { bs = new B[n]; for (int i = 0; i < n; i++) bs[i] = new B(); } }',
     });
-    expect(edgeList(m)).toEqual(['composition A->B bs *']);
+    expect(edgeList(m)).toEqual(['composition A->B bs 0..*']);
   });
 
   it('an empty array from the constructor and a setter parameter: aggregation', async () => {
     const m = await analyze({
       'A.java': 'class B {} class A { B[] bs; A() { bs = new B[0]; } void setBs(B[] bs) { this.bs = bs; } }',
     });
-    expect(edgeList(m)).toEqual(['aggregation A->B bs *']);
+    expect(edgeList(m)).toEqual(['aggregation A->B bs 0..*']);
   });
 
   it('merges reciprocal plain associations into one, navigable both ways', async () => {
@@ -302,7 +351,7 @@ describe('relations', () => {
     const m = await analyze({
       'A.java': 'import java.util.*; class Slot<T> {} class Act {} class S { List<Slot<Act>> slots; Slot<Act> one; }',
     });
-    expect(edgeList(m)).toEqual(['association S->Slot slots *', 'association S->Slot one 1']);
+    expect(edgeList(m)).toEqual(['association S->Slot slots 0..*', 'association S->Slot one 1']);
   });
 });
 
