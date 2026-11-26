@@ -1,0 +1,62 @@
+# Architecture
+
+Esquadro is a static web app. All analysis and layout run in the browser; there is no backend and no analytics.
+
+## Pipeline
+
+```
+files (folder, zip, paste, GitHub)
+  → detect language (extension, shebang)          src/analyzers/index.ts
+  → analyzer → DiagramModel                       src/analyzers/<lang>/
+  → layout candidates → score → best              src/layout/          (Phase 2)
+  → SVG render (themes, notations)                src/render/          (Phase 2)
+  → editor, exports                               src/app/, src/export/ (Phases 3–4)
+```
+
+Analysis and layout will run in a Web Worker so the UI never freezes.
+
+## Contracts
+
+`src/model/types.ts` is the model every stage shares (`DiagramModel`, nodes, edges, evidence, diagnostics). `src/analyzers/types.ts` is the analyzer interface: `detect(file)` returns 0..1 and `analyze(files, kind, opts)` never throws; problems become diagnostics (`safeAnalyze` in `src/analyzers/shared/model.ts` enforces this). Ids are stable across runs (`${kind}:${qualifiedName}`), because the editor stores positions by id. `src/model/kinds.ts` mirrors the string unions as runtime lists and fails to compile if they drift apart.
+
+## Parsing: web-tree-sitter
+
+Java, C and Bash are parsed with tree-sitter compiled to WebAssembly. SQL uses a hand-written DDL parser (T-SQL batches, `[names]`, `IDENTITY` and similar are handled poorly by generic SQL parsers).
+
+Pinned versions, chosen in the Phase 0 spike:
+
+| Package           | Version | Grammar ABI |
+| ----------------- | ------- | ----------- |
+| `web-tree-sitter` | 0.27.2  | runtime accepts ABI 13–15 |
+| `tree-sitter-java` | 0.23.5 | 14 |
+| `tree-sitter-c`    | 0.24.1 | 15 |
+| `tree-sitter-bash` | 0.25.1 | 15 |
+
+Why these: they are the latest releases, each grammar package ships its own prebuilt `.wasm`, and all three ABIs fall inside the runtime's supported range, so no grammar has to be rebuilt with the tree-sitter CLI. The old all-in-one `tree-sitter-wasms` package was rejected because it bundles 0.20-era grammars. Versions are pinned exactly because a grammar bump can change node names and break the analyzers silently; bump them together and rerun the spike test (`src/analyzers/shared/tree-sitter.test.ts`), which checks every grammar's ABI against the runtime.
+
+The grammar packages declare the native `tree-sitter` binding as an optional peer, so npm does not build any native code.
+
+### Loading in two environments
+
+`src/analyzers/shared/tree-sitter.ts` caches one `Language` per grammar and hands out parsers. Where the `.wasm` bytes come from is plugged in once:
+
+- `tree-sitter-browser.ts` imports each `.wasm` with Vite's `?url`. Each grammar becomes a hashed asset that is only fetched when a file of that language shows up (Java 415 kB, C 626 kB, Bash 1.36 MB before compression; 53, 75 and 186 kB gzipped).
+- `tree-sitter-node.ts` reads the files from `node_modules`. Vitest loads it as a setup file; `scripts/bench.ts` imports it.
+
+Keeping them apart stops `node:fs` from leaking into the browser bundle. (The files are named `-node`/`-browser` rather than `.node`/`.browser` because Node treats a `.node` specifier as a native addon.)
+
+The production build silences one expected warning: Emscripten output in `web-tree-sitter` uses direct `eval`.
+
+## Tooling
+
+- **TypeScript 7** (the native compiler), `strict` plus `noUncheckedIndexedAccess`. One `tsconfig.json` covers `src/` and `scripts/`, so `npx tsc --noEmit` checks everything.
+- **oxlint** instead of ESLint. typescript-eslint does not support TypeScript 7 yet, and oxlint covers the React, hooks, import, Vitest and TypeScript rules we need while running in milliseconds. `npm run lint` fails on warnings.
+- **Prettier** for formatting, **Vitest** for tests (Node environment), **tsx** for scripts.
+
+## Fixtures and the bench
+
+See `docs/fixtures.md`. `src/bench/compare.ts` scores a model against an `expected.yaml`; `src/bench/fixtures.ts` loads cases from `fixtures/` (public, original) and `fixtures-private/` (course material, local only, skipped in CI); `scripts/bench.ts` prints the tables and writes `public/bench.json` with aggregate numbers only.
+
+## Hosting
+
+GitHub Pages at `https://cerejo2.github.io/esquadro-diagrams/`. Vite's `base` is `/esquadro-diagrams/` in production builds; the app will use hash routes so Pages never has to rewrite URLs.

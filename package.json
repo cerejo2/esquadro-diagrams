@@ -1,0 +1,45 @@
+{
+  "name": "esquadro-diagrams",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Turns Java, C, Bash and SQL code into editable diagrams that look hand-drawn, entirely in the browser.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "oxlint --deny-warnings",
+    "format": "prettier --write src scripts docs index.html spike.html \"*.json\"",
+    "format:check": "prettier --check src scripts index.html spike.html \"*.json\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "tsx scripts/bench.ts",
+    "fixtures:check": "tsx scripts/check-fixtures.ts"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tree-sitter-bash": "0.25.1",
+    "tree-sitter-c": "0.24.1",
+    "tree-sitter-java": "0.23.5",
+    "web-tree-sitter": "0.27.2",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "oxlint": "^1.94.0",
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "~7.0.2",
+    "vite": "^8.4.0",
+    "vitest": "^5.1.2"
+  }
+}

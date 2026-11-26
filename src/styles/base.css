@@ -1,0 +1,82 @@
+/* Provisional styles for the Phase 0 pages. The real design system arrives in Phase 3. */
+:root {
+  --paper: #fbfaf6;
+  --grid: #e7e4da;
+  --ink: #1f2328;
+  --ink-soft: #57606a;
+  --accent: #1f5fbf;
+  --mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15181c;
+    --grid: #23272d;
+    --ink: #e6edf3;
+    --ink-soft: #9aa4ae;
+    --accent: #6ea8fe;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font: 16px/1.5 var(--sans);
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 16px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+h2 {
+  font: 600 1rem var(--mono);
+}
+
+p {
+  color: var(--ink-soft);
+}
+
+a {
+  color: var(--accent);
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+pre {
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  max-height: 360px;
+  font: 12px/1.45 var(--mono);
+  background: var(--paper);
+  border: 1px solid var(--grid);
+  border-radius: 6px;
+}
