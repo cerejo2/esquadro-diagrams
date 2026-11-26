@@ -59,4 +59,6 @@ See `docs/fixtures.md`. `src/bench/compare.ts` scores a model against an `expect
 
 ## Hosting
 
-GitHub Pages at `https://cerejo2.github.io/esquadro-diagrams/`. Vite's `base` is `/esquadro-diagrams/` in production builds; the app will use hash routes so Pages never has to rewrite URLs.
+GitHub Pages at `https://cerejo2.github.io/esquadro-diagrams/`, deployed by `.github/workflows/deploy.yml` on every push to `main`; `ci.yml` runs lint, format check, typecheck, tests and build. Vite's `base` is `/esquadro-diagrams/` in production builds and in `vite preview` (so the preview serves the build exactly as Pages does) and `/` in the dev server. The app will use hash routes so Pages never has to rewrite URLs.
+
+Input files are decoded by BOM (`src/io/decode.ts`): UTF-8, UTF-8 with BOM, and UTF-16 LE/BE, because SQL Server Management Studio saves scripts as UTF-16. Files with NUL bytes and no BOM are treated as binary and skipped.
