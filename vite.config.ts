@@ -4,9 +4,10 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 // The site is served from https://cerejo2.github.io/esquadro-diagrams/,
-// so every asset URL needs that prefix in production builds.
-export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/esquadro-diagrams/' : '/',
+// so every asset URL needs that prefix in production builds and in
+// `vite preview`, which must serve the build exactly as Pages will.
+export default defineConfig(({ command, isPreview }) => ({
+  base: command === 'build' || isPreview ? '/esquadro-diagrams/' : '/',
   plugins: [react()],
   build: {
     rollupOptions: {
