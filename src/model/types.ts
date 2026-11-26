@@ -89,6 +89,7 @@ export interface DiagramNode {
   group?: string; // pacote, ficheiro ou esquema, para agrupar no layout
   parent?: string; // nó aninhado (classe interna)
   ref?: SourceRef;
+  evidence?: Evidence[]; // porque o nó existe (declaração, ficheiro:linha)
 }
 
 export type EdgeKind =

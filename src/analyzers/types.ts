@@ -5,6 +5,8 @@ export interface AnalyzeOptions {
   showAccessors?: boolean; // getters e setters (por defeito false)
   showDependencies?: boolean; // por defeito false
   showExternal?: boolean; // funções e comandos externos (por defeito false)
+  showMain?: boolean; // main e classes que só o contêm (por defeito false)
+  showObjectMethods?: boolean; // toString, equals, hashCode (por defeito false)
   entry?: string; // fluxograma: nome da função ou 'script'
   locale?: 'pt' | 'en';
 }

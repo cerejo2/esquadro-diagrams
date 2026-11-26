@@ -60,7 +60,15 @@ const EDGE_KEYS = new Set([
   'kind', 'from', 'to', 'role', 'multiplicity', 'fromRole', 'fromMultiplicity',
   'fromColumn', 'toColumn', 'total', 'label',
 ]);
-const OPTION_KEYS = new Set(['showAccessors', 'showDependencies', 'showExternal', 'entry', 'locale']);
+const OPTION_KEYS = new Set([
+  'showAccessors',
+  'showDependencies',
+  'showExternal',
+  'showMain',
+  'showObjectMethods',
+  'entry',
+  'locale',
+]);
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const isStrList = (v: unknown): v is string[] => Array.isArray(v) && v.every((s) => typeof s === 'string');
