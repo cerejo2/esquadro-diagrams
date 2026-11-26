@@ -1,0 +1,64 @@
+kind: java.class
+source: original
+options:
+  showDependencies: true
+nodes:
+  - name: Schedulable
+    kind: interface
+    stereotypes: [interface]
+    operations: ['+ duration(): int']
+  - name: Act
+    kind: abstract
+    attributes: ['- name: String', '# minutes: int']
+    operations: ['# Act(name: String, minutes: int)', '+ duration(): int', '+ headline(): String']
+  - name: Concert
+    kind: class
+    attributes: ['- genres: String[]']
+    operations: ['+ Concert(name: String, minutes: int, genres: String[])', '+ headline(): String']
+  - name: Talk
+    kind: class
+    attributes: ['- speaker: String']
+    operations: ['+ Talk(name: String, minutes: int, speaker: String)', '+ headline(): String']
+  - name: Slot
+    kind: class
+    attributes: ['- item: T', '- start: int', '- minutes: int']
+    operations: ['+ Slot(item: T, start: int, minutes: int)', '+ end(): int', '+ overlaps(from: int, to: int): boolean']
+  - name: Volunteer
+    kind: record
+    attributes: ['- name: String', '- phone: String']
+    operations: []
+  - name: Stage
+    kind: class
+    attributes: ['- name: String', '- slots: List<Slot<Act>>', '- crew: Volunteer[]']
+    operations: ['+ Stage(name: String)', '+ book(act: Act, start: int): boolean', '+ crewSize(): int']
+  - name: TicketType
+    kind: enum
+    stereotypes: [enumeration]
+    attributes: [DAY, WEEKEND, VIP]
+    operations: ['+ price(): double']
+  - name: Festival
+    kind: class
+    attributes: ['- stages: Map<String, Stage>', '- revenue: double']
+    operations:
+      - '+ Festival(stageNames: String...)'
+      - '+ stage(name: String): Stage'
+      - '+ sell(type: TicketType, count: int): double'
+edges:
+  - { kind: realization, from: Act, to: Schedulable }
+  - { kind: generalization, from: Concert, to: Act }
+  - { kind: generalization, from: Talk, to: Act }
+  - { kind: composition, from: Stage, to: Slot, role: slots, multiplicity: '*' }
+  - { kind: aggregation, from: Stage, to: Volunteer, role: crew, multiplicity: '*' }
+  - { kind: composition, from: Festival, to: Stage, role: stages, multiplicity: '*' }
+  - { kind: dependency, from: Stage, to: Act }
+  - { kind: dependency, from: Festival, to: TicketType }
+notes: >-
+  Run with showDependencies on, so the two parameter-only dependencies are scored: Stage to Act
+  (book's parameter) and Festival to TicketType (sell's parameter). Slot is generic (Slot<T>); the
+  node is named Slot, and its field of type T makes no edge. Stage.slots is List<Slot<Act>>: the
+  element type Slot gives the composition (add(new Slot<>(...))); Act inside the type argument is not
+  a field relation. Stage.crew is an array set from setCrew, so aggregation with "*", even though the
+  constructor starts it as an empty array (array creation is not new Volunteer). Festival.stages is
+  composition because the constructor puts new Stage(...) as Map values. Varargs show as String....
+  Accessors hidden by default: Act.getName, Slot.getItem, Stage.setCrew, Festival.getRevenue. The
+  record has no declared methods, so its operation list is empty.

@@ -1,0 +1,61 @@
+kind: java.class
+source: original
+nodes:
+  - name: Item
+    kind: abstract
+    attributes: ['- title: String', '- year: int']
+    operations: ['# Item(title: String, year: int)', '+ describe(): String']
+  - name: Book
+    kind: class
+    attributes: ['- isbn: String', '- authors: List<Author>']
+    operations:
+      - '+ Book(title: String, year: int, isbn: String)'
+      - '+ addAuthor(author: Author): void'
+      - '+ describe(): String'
+  - name: Magazine
+    kind: class
+    attributes: ['- issue: int']
+    operations: ['+ Magazine(title: String, year: int, issue: int)', '+ describe(): String']
+  - name: Author
+    kind: record
+    attributes: ['- name: String', '- country: String']
+    operations: ['+ initials(): String']
+  - name: Catalog
+    kind: class
+    attributes: ['- items: Map<String, Item>']
+    operations: ['+ add(item: Item): void', '+ find(title: String): Optional<Item>', '+ size(): int']
+  - name: Member
+    kind: class
+    attributes: ['- name: String']
+    operations: ['+ Member(name: String)']
+  - name: Loan
+    kind: class
+    attributes: ['- item: Item', '- member: Member', '- due: LocalDate', '- returned: boolean']
+    operations:
+      - '+ Loan(item: Item, member: Member, due: LocalDate)'
+      - '+ close(): void'
+      - '+ isLate(today: LocalDate): boolean'
+  - name: Desk
+    kind: class
+    attributes: ['- catalog: Catalog', '- loans: List<Loan>']
+    operations:
+      - '+ Desk(catalog: Catalog)'
+      - '+ lend(title: String, member: Member, today: LocalDate): void'
+      - '+ lateLoans(today: LocalDate): List<Loan>'
+edges:
+  - { kind: generalization, from: Book, to: Item }
+  - { kind: generalization, from: Magazine, to: Item }
+  - { kind: aggregation, from: Book, to: Author, role: authors, multiplicity: '*' }
+  - { kind: aggregation, from: Catalog, to: Item, role: items, multiplicity: '*' }
+  - { kind: aggregation, from: Desk, to: Catalog, role: catalog, multiplicity: '1' }
+  - { kind: composition, from: Desk, to: Loan, role: loans, multiplicity: '*' }
+  - { kind: aggregation, from: Loan, to: Item, role: item, multiplicity: '1' }
+  - { kind: aggregation, from: Loan, to: Member, role: member, multiplicity: '1' }
+notes: >-
+  Two packages, library.catalog and library.lending; nodes use simple names. Default options:
+  the trivial accessors (Item.getTitle, getYear, Book.getIsbn, Magazine.getIssue, setIssue,
+  Member.getName, setName, Loan.isReturned) are hidden, and so are the dependencies (Desk uses Member
+  and Item only as a parameter and a local). Record components are listed as private attributes.
+  Catalog.items is filled with put(key, item) from a parameter, read as the add(p) case of the
+  aggregation rule, and its multiplicity comes from the Map value. Desk.loans is composition because
+  of add(new Loan(...)). Item.describe is abstract (italic when drawn).

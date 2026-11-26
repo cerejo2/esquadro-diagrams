@@ -1,3 +1,5 @@
 * text=auto eol=lf
 *.png binary
 *.wasm binary
+# Kept byte for byte: this case tests a BOM and CRLF line ends.
+fixtures/java/edge-text/** -text

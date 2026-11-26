@@ -1,0 +1,56 @@
+kind: java.class
+source: original
+options:
+  showDependencies: true
+nodes:
+  - name: Forma
+    kind: interface
+    stereotypes: [interface]
+    operations: ['+ area(): double']
+  - name: Ponto
+    kind: record
+    attributes: ['- x: double', '- y: double', '+ ORIGEM: Ponto']
+    operations: []
+  - name: Circulo
+    kind: record
+    attributes: ['- centro: Ponto', '- raio: double']
+    operations: ['+ Circulo(centro: Ponto, raio: double)', '+ unitario(): Circulo', '+ area(): double']
+  - name: Retangulo
+    kind: record
+    attributes: ['- canto: Ponto', '- largura: double', '- altura: double']
+    operations: ['+ Retangulo(canto: Ponto, largura: double, altura: double)', '+ area(): double']
+  - name: Poligono
+    kind: class
+    attributes: ['# vertices: List<Ponto>']
+    operations: ['+ Poligono(vs: List<Ponto>)', '+ area(): double']
+  - name: Triangulo
+    kind: class
+    attributes: []
+    operations: ['+ Triangulo(a: Ponto, b: Ponto, c: Ponto)']
+  - name: Geometria
+    kind: class
+    operations: ['- Geometria()', '+ descrever(f: Forma): String']
+edges:
+  - { kind: realization, from: Circulo, to: Forma }
+  - { kind: realization, from: Retangulo, to: Forma }
+  - { kind: realization, from: Poligono, to: Forma }
+  - { kind: generalization, from: Triangulo, to: Poligono }
+  - { kind: composition, from: Ponto, to: Ponto, role: ORIGEM, multiplicity: '1' }
+  - { kind: aggregation, from: Circulo, to: Ponto, role: centro, multiplicity: '1' }
+  - { kind: aggregation, from: Retangulo, to: Ponto, role: canto, multiplicity: '1' }
+  - { kind: aggregation, from: Poligono, to: Ponto, role: vertices, multiplicity: '*' }
+  - { kind: dependency, from: Triangulo, to: Ponto }
+  - { kind: dependency, from: Geometria, to: Forma }
+  - { kind: dependency, from: Geometria, to: Circulo }
+  - { kind: dependency, from: Geometria, to: Retangulo }
+  - { kind: dependency, from: Geometria, to: Ponto }
+  - { kind: dependency, from: Geometria, to: Poligono }
+notes: >-
+  The permits clause of the sealed interface makes no edge (the subtypes point at Forma themselves).
+  Record components are private final fields set by the canonical constructor, so a component of a
+  project type is an aggregation; the compact constructors show with the record's parameters. Ponto.ORIGEM
+  is a static constant created with new in its declaration: a field of the class's own type, so a
+  composition from Ponto to itself (§7.1 does not exempt static fields). Poligono.vertices gets addAll(vs)
+  from a constructor parameter, so aggregation. The comment in "extends /* ... */ Poligono" must not hide the
+  generalization. Geometria names Circulo, Retangulo, Ponto and Poligono only in switch patterns (a type
+  pattern, a record pattern and its component), which are uses.

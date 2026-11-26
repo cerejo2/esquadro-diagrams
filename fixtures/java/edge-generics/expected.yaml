@@ -1,0 +1,44 @@
+kind: java.class
+source: original
+nodes:
+  - name: Loja
+    kind: class
+    attributes:
+      - '- porCliente: Map<String, List<Pedido>>'
+      - '- ultimo: Map<Cliente, Pedido>'
+      - '- catalogo: List<? extends Produto>'
+      - '- devolvidos: List<? super Produto>'
+      - '- etiquetas: Set<?>'
+      - '- vip: Optional<Cliente>'
+      - '- promocoes: List<Produto>'
+      - '- prateleiras: Produto[][]'
+      - '- caixas: List<Caixa<Produto>>'
+    operations: ['+ registar(cliente: Cliente, pedido: Pedido): void', '+ embalar(p: Produto): void']
+  - name: Pedido
+    kind: class
+    attributes: ['- numero: int']
+    operations: ['+ Pedido(numero: int)']
+  - name: Cliente
+    kind: class
+  - name: Produto
+    kind: class
+  - name: Caixa
+    kind: class
+    attributes: ['- conteudo: T']
+    operations: ['+ Caixa(conteudo: T)']
+edges:
+  - { kind: association, from: Loja, to: Pedido, role: porCliente, multiplicity: '*' }
+  - { kind: aggregation, from: Loja, to: Pedido, role: ultimo, multiplicity: '*' }
+  - { kind: aggregation, from: Loja, to: Produto, role: catalogo, multiplicity: '*' }
+  - { kind: association, from: Loja, to: Cliente, role: vip, multiplicity: '0..1' }
+  - { kind: association, from: Loja, to: Produto, role: promocoes, multiplicity: '*' }
+  - { kind: association, from: Loja, to: Produto, role: prateleiras, multiplicity: '*' }
+  - { kind: composition, from: Loja, to: Caixa, role: caixas, multiplicity: '*' }
+notes: >-
+  porCliente holds Pedido as the element of a list that is a Map value (Map<String, List<Pedido>>);
+  nothing stores a Pedido in it directly, so it is an association with "*". ultimo is a Map whose value
+  comes from put(cliente, pedido) with a parameter, so aggregation. catalogo (? extends Produto) is set by
+  a setter, so aggregation. devolvidos (? super Produto) may hold any supertype of Produto, so it is not
+  read as a Produto container, and Set<?> names no type. The comment inside List</* ... */ Produto> must
+  not change the type text nor hide the relation. Caixa<T extends Produto> has a field of type T, which
+  is a type variable and makes no edge; caixas.add(new Caixa<>(p)) makes caixas a composition.

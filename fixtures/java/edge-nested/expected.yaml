@@ -1,0 +1,40 @@
+kind: java.class
+source: original
+nodes:
+  - name: Arvore
+    kind: class
+    attributes: ['- raiz: No<T>', '- ordem: Comparator<T>', '- tamanho: int']
+    operations:
+      - '+ Arvore(ordem: Comparator<T>)'
+      - '+ inserir(valor: T): void'
+      - '+ iterator(): Iterator<T>'
+      - '+ limpeza(): Runnable'
+  - name: Arvore.No
+    kind: class
+    attributes: ['- valor: E', '- esquerda: No<E>', '- direita: No<E>']
+    operations: ['~ No(valor: E)']
+  - name: Arvore.Percurso
+    kind: class
+    attributes: ['- atual: No<T>']
+    operations: ['+ hasNext(): boolean', '+ next(): T']
+  - name: Floresta
+    kind: class
+    attributes: ['- arvores: List<Arvore<String>>', '- destaque: Arvore.No<String>', '- cursor: Arvore<String>.Percurso']
+edges:
+  - { kind: nesting, from: Arvore.No, to: Arvore }
+  - { kind: nesting, from: Arvore.Percurso, to: Arvore }
+  - { kind: association, from: Arvore, to: Arvore.No, role: raiz, multiplicity: '0..1' }
+  - { kind: association, from: Arvore.No, to: Arvore.No, role: esquerda, multiplicity: '1' }
+  - { kind: association, from: Arvore.No, to: Arvore.No, role: direita, multiplicity: '1' }
+  - { kind: association, from: Arvore.Percurso, to: Arvore.No, role: atual, multiplicity: '1' }
+  - { kind: association, from: Floresta, to: Arvore, role: arvores, multiplicity: '*' }
+  - { kind: association, from: Floresta, to: Arvore.No, role: destaque, multiplicity: '1' }
+  - { kind: association, from: Floresta, to: Arvore.Percurso, role: cursor, multiplicity: '1' }
+notes: >-
+  Arvore.raiz is assigned new No<>(valor) only in a method (not a constructor), so it is not a composition.
+  The anonymous Runnable sets raiz = null: an anonymous class is not a node, its code is Arvore's code, and a
+  bare raiz there is Arvore's field, so raiz is 0..1. The anonymous class's own field (No<T> visto) makes no
+  edge. Percurso reads atual and assigns atual = atual.direita, which is neither new nor a parameter.
+  Floresta.arvores is created as an ArrayList, which is not an Arvore, so association. Floresta names the
+  inner class through a parameterised outer type, Arvore<String>.Percurso, which must resolve to
+  Arvore.Percurso. Iterable, Iterator, Comparator and Runnable are JDK types and make no node.

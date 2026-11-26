@@ -1,0 +1,36 @@
+kind: java.class
+source: original
+nodes:
+  - name: Comparavel
+    kind: interface
+    stereotypes: [interface]
+    operations: ['+ comparar(outro: T): int']
+  - name: Prioridade
+    kind: enum
+    stereotypes: [enumeration]
+    attributes: [BAIXA, MEDIA, ALTA, '- peso: int', '- rotulo: String']
+    operations:
+      - '- Prioridade(peso: int, rotulo: String)'
+      - '+ urgente(): boolean'
+      - '+ dePeso(p: int): Prioridade'
+      - '+ comparar(outra: Prioridade): int'
+  - name: Tarefa
+    kind: class
+    attributes: ['- titulo: String', '- prioridade: Prioridade', '- estado: Estado']
+    operations: ['+ Tarefa(titulo: String)', '+ escalar(nova: Prioridade): void', '+ avancar(): void']
+  - name: Tarefa.Estado
+    kind: enum
+    stereotypes: [enumeration]
+    attributes: [ABERTA, FECHADA]
+    operations: ['~ seguinte(): Estado']
+edges:
+  - { kind: realization, from: Prioridade, to: Comparavel }
+  - { kind: nesting, from: Tarefa.Estado, to: Tarefa }
+  - { kind: association, from: Tarefa, to: Prioridade, role: prioridade, multiplicity: '1' }
+  - { kind: association, from: Tarefa, to: Tarefa.Estado, role: estado, multiplicity: '1' }
+notes: >-
+  Enum constants are listed by name, before the fields. An enum constructor without a modifier is private.
+  getPeso is a trivial getter. The body of ALTA overrides urgente but is not a node. Tarefa.prioridade starts
+  as a constant (Prioridade.MEDIA, not new) and escalar is not a setter by name, so association. The nested
+  enum is static and nests in Tarefa; Estado inside Tarefa resolves to Tarefa.Estado. The type argument in
+  Comparavel<Prioridade> is the enum itself, so no extra edge.

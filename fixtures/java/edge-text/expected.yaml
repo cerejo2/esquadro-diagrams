@@ -1,0 +1,31 @@
+kind: java.class
+source: original
+options:
+  showDependencies: true
+nodes:
+  - name: Relatório
+    kind: class
+    attributes:
+      - '- título: String'
+      - '- secções: List<Secção>'
+      - '- modelo: String'
+      - '- aspas: char'
+      - '- bloco: String'
+    operations: ['+ Relatório(título: String)', '+ acrescentar(nome: String): void', '+ páginas(): int']
+  - name: Secção
+    kind: class
+    attributes: ['- nome: String']
+    operations: ['~ Secção(nome: String)']
+  - name: Órgão
+    kind: class
+    attributes: []
+    operations: ['- Órgão()', '~ contar(lista: List<Secção>): int']
+edges:
+  - { kind: composition, from: Relatório, to: Secção, role: secções, multiplicity: '*' }
+  - { kind: dependency, from: Relatório, to: Órgão }
+  - { kind: dependency, from: Órgão, to: Secção }
+notes: >-
+  The file starts with a UTF-8 BOM and uses CRLF line ends. Names use accented letters, including an
+  uppercase accented first letter (Órgão): Órgão.contar(...) is a static call, so a dependency, and
+  getTítulo is a trivial getter (hidden). The classes in the comments, in the string literal and in the
+  text block are not code. Three top-level types share one file.

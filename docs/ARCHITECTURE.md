@@ -47,6 +47,19 @@ Keeping them apart stops `node:fs` from leaking into the browser bundle. (The fi
 
 The production build silences one expected warning: Emscripten output in `web-tree-sitter` uses direct `eval`.
 
+## Java analyzer
+
+`src/analyzers/java/` turns tree-sitter output into the three Java diagrams in four passes:
+
+- `collect.ts` walks every file once and records each type (class, interface, enum, record, nested types) with its fields, methods and supertypes. `ast.ts` holds the small helpers for reading type names, generic arguments and modifiers.
+- `resolve.ts` maps a simple name to a project type by looking, in order, at type parameters, member types (own, enclosing and inherited), explicit imports, the same package and `import pkg.*`. Names that match several types become a warning instead of a guess, and JDK types never become nodes.
+- `relations.ts` applies the field rules of PROMPT.md §7.1. Composition when the class creates the object (`new` in the declaration, a constructor or an initializer, or `add(new T(...))`); aggregation when it receives it (a constructor or setter parameter, or `add(p)`); association otherwise. It also lists every type use (parameters, locals, `new`, static access, casts, patterns) for the dependency edges.
+- `build.ts` builds `java.class`, `java.package` and `java.dependency`. Reciprocal plain associations merge into one edge, a class that only holds `main` is left out, and dependencies are hidden by default (`showDependencies`).
+
+Every node and edge carries evidence (the rule and `file:line`), so the UI can explain why an arrow exists. Ancestor lookups are iterative and cached, because a recursive walk overflowed the stack on a 3000-class inheritance chain.
+
+Private cases may differ from their course references only where the drawing follows another convention than §7.1. The accepted differences sit next to each private case in `known.yaml`, outside the repository.
+
 ## Tooling
 
 - **TypeScript 7** (the native compiler), `strict` plus `noUncheckedIndexedAccess`. One `tsconfig.json` covers `src/` and `scripts/`, so `npx tsc --noEmit` checks everything.

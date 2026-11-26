@@ -1,0 +1,36 @@
+kind: java.class
+source: original
+options:
+  showDependencies: true
+nodes:
+  - name: Agenda
+    kind: class
+    attributes: ['- eventos: List<Evento>', '- fabrica: Supplier<Lembrete>', '- porData: Comparator<Evento>']
+    operations: ['+ importar(linhas: List<String>): void', '+ exportar(): void']
+  - name: Evento
+    kind: class
+    operations: ['+ Evento(data: String)']
+  - { name: Lembrete, kind: class }
+  - name: Conversor
+    kind: class
+    operations: ['- Conversor()', '+ normalizar(s: String): String']
+  - { name: Formato, kind: class }
+  - { name: Etiqueta, kind: class }
+  - name: Visitante
+    kind: interface
+    stereotypes: [interface]
+    operations: ['+ visitar(etiqueta: Etiqueta): void']
+edges:
+  - { kind: composition, from: Agenda, to: Evento, role: eventos, multiplicity: '*' }
+  - { kind: dependency, from: Agenda, to: Lembrete }
+  - { kind: dependency, from: Agenda, to: Conversor }
+  - { kind: dependency, from: Agenda, to: Formato }
+  - { kind: dependency, from: Agenda, to: Visitante }
+  - { kind: dependency, from: Agenda, to: Etiqueta }
+  - { kind: dependency, from: Visitante, to: Etiqueta }
+notes: >-
+  eventos.add(new Evento(l)) inside a lambda is still Agenda's own code, so eventos is a composition.
+  Lembrete appears only in Supplier<Lembrete> and in the constructor reference Lembrete::new, Conversor only in
+  the static method reference Conversor::normalizar: both are dependencies, not field relations (Supplier is
+  not a collection). The local class Linha is not a node, but its field type Formato is a use by Agenda.
+  Etiqueta appears only as the declared type of a lambda parameter. Evento.getData is a trivial getter.

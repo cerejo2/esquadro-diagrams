@@ -1,0 +1,11 @@
+kind: java.package
+source: original
+nodes:
+  - { name: library.catalog, kind: package }
+  - { name: library.lending, kind: package }
+edges:
+  - { kind: dependency, from: library.lending, to: library.catalog }
+notes: >-
+  One dependency: lending uses catalog (Desk to Catalog and Item, Loan to Item). Nothing in catalog
+  refers to lending. The count on the edge is not scored here, because the counting rule (type pairs
+  or references) is not fixed yet; with type pairs it would be 3.

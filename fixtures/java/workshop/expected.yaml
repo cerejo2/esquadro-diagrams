@@ -1,0 +1,69 @@
+kind: java.class
+source: original
+nodes:
+  - name: Vehicle
+    kind: interface
+    stereotypes: [interface]
+    operations: ['+ plate(): String', '+ wheels(): int']
+  - name: Car
+    kind: class
+    attributes: ['- plate: String', '~ bay: Bay']
+    operations: ['+ Car(plate: String)', '+ plate(): String', '+ wheels(): int', '~ leave(): void']
+  - name: Motorbike
+    kind: class
+    attributes: ['- plate: String']
+    operations: ['+ Motorbike(plate: String)', '+ plate(): String', '+ wheels(): int']
+  - name: Bay
+    kind: class
+    attributes: ['- number: int', '~ occupant: Car']
+    operations: ['+ Bay(number: int)', '+ available(): boolean', '~ clear(): void']
+  - name: Status
+    kind: enum
+    stereotypes: [enumeration]
+    attributes: [OPEN, IN_PROGRESS, DONE]
+    operations: ['+ next(): Status']
+  - name: RepairOrder
+    kind: class
+    attributes: ['- vehicle: Vehicle', '- status: Status', '- tasks: List<Task>']
+    operations:
+      - '+ RepairOrder(vehicle: Vehicle)'
+      - '+ addTask(description: String, hours: double): void'
+      - '+ advance(): void'
+      - '+ total(rate: double): double'
+  - name: RepairOrder.Task
+    kind: class
+    attributes: ['- description: String', '- hours: double']
+    operations: ['~ Task(description: String, hours: double)', '+ cost(rate: double): double']
+  - name: Workshop
+    kind: class
+    attributes: ['- bays: Bay[]', '- orders: List<RepairOrder>']
+    operations:
+      - '+ Workshop(size: int)'
+      - '+ checkIn(car: Car): boolean'
+      - '+ checkOut(car: Car): void'
+      - '+ openOrders(): int'
+edges:
+  - { kind: realization, from: Car, to: Vehicle }
+  - { kind: realization, from: Motorbike, to: Vehicle }
+  - kind: association
+    from: Car
+    to: Bay
+    role: bay
+    multiplicity: '0..1'
+    fromRole: occupant
+    fromMultiplicity: '0..1'
+  - { kind: composition, from: Workshop, to: Bay, role: bays, multiplicity: '*' }
+  - { kind: composition, from: Workshop, to: RepairOrder, role: orders, multiplicity: '*' }
+  - { kind: aggregation, from: RepairOrder, to: Vehicle, role: vehicle, multiplicity: '1' }
+  - { kind: association, from: RepairOrder, to: Status, role: status, multiplicity: '1' }
+  - { kind: composition, from: RepairOrder, to: RepairOrder.Task, role: tasks, multiplicity: '*' }
+  - { kind: nesting, from: RepairOrder.Task, to: RepairOrder }
+notes: >-
+  Car.bay and Bay.occupant are reciprocal package-private fields, linked by Workshop.checkIn and set
+  to null inside their own classes, so they merge into one association navigable both ways with
+  0..1 at each end. Workshop.bays is composition: the constructor fills the array with new Bay(...).
+  Workshop.orders is composition through add(new RepairOrder(...)). RepairOrder.status starts as the
+  constant Status.OPEN (not new, not a parameter), so it is a plain association. Interface methods
+  have no modifier but are implicitly public, hence "+". Hidden by default: Bay.getNumber,
+  RepairOrder.getStatus and the dependencies Workshop to Car (parameters) and Workshop to Status
+  (constant access). The nesting edge goes from the nested class to its owner.

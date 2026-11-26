@@ -1,0 +1,26 @@
+kind: java.class
+source: original
+nodes:
+  - name: Biblioteca
+    kind: class
+    attributes: ['- livros: List<Livro>']
+    operations: ['+ adicionar(livro: Livro): void', '+ contar(): int']
+  - name: Livro
+    kind: class
+    attributes: ['- titulo: String', '- autor: Autor']
+    operations: ['+ Livro(titulo: String)']
+  - name: Autor
+    kind: class
+    attributes: ['- nome: String']
+  - name: Truncado
+    kind: class
+    attributes: ['- livro: Livro']
+    operations: ['+ ler(): void']
+edges:
+  - { kind: aggregation, from: Biblioteca, to: Livro, role: livros, multiplicity: '*' }
+  - { kind: composition, from: Livro, to: Autor, role: autor, multiplicity: '1' }
+  - { kind: association, from: Truncado, to: Livro, role: livro, multiplicity: '1' }
+notes: >-
+  Three files do not compile: Biblioteca.contar( has no closing parenthesis, new Autor(; in Livro is not
+  closed, and Truncado.java ends in the middle of a method. Each error becomes a diagnostic with its file and
+  line, and the analysis carries on with what the parser recovers, so every class and relation is still there.

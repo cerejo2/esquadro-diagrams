@@ -1,0 +1,71 @@
+kind: java.class
+source: original
+nodes:
+  - name: Color
+    kind: enum
+    stereotypes: [enumeration]
+    attributes: [RED, BLUE, GREEN, YELLOW]
+  - name: Position
+    kind: record
+    attributes: ['- row: int', '- col: int']
+    operations: ['+ offset(dr: int, dc: int): Position', '+ distance(other: Position): int']
+  - name: Movable
+    kind: interface
+    stereotypes: [interface]
+    operations: ['+ moveTo(target: Position): boolean']
+  - name: Piece
+    kind: abstract
+    attributes: ['- color: Color', '- position: Position']
+    operations:
+      - '# Piece(color: Color, start: Position)'
+      - '+ moveTo(target: Position): boolean'
+      - '# canReach(target: Position): boolean'
+  - name: Pawn
+    kind: class
+    attributes: []
+    operations: ['+ Pawn(color: Color, start: Position)', '# canReach(target: Position): boolean']
+  - name: Knight
+    kind: class
+    attributes: []
+    operations: ['+ Knight(color: Color, start: Position)', '# canReach(target: Position): boolean']
+  - name: Board
+    kind: class
+    attributes: ['- size: int', '- pieces: List<Piece>', '- dice: Dice']
+    operations:
+      - '+ Board(size: int)'
+      - '+ place(piece: Piece): void'
+      - '+ inside(p: Position): boolean'
+      - '+ roll(): int'
+  - name: Board.Dice
+    kind: class
+    attributes: ['- faces: int', '- random: Random']
+    operations: ['~ Dice(faces: int)', '+ roll(): int']
+  - name: Player
+    kind: class
+    attributes: ['- name: String', '- piece: Piece', '- score: int']
+    operations: ['+ Player(name: String, piece: Piece)', '+ play(board: Board): boolean']
+  - name: Game
+    kind: class
+    attributes: ['- board: Board', '- players: Player[]', '- turn: int']
+    operations: ['+ Game(names: String[], size: int)', '+ next(): Player']
+edges:
+  - { kind: realization, from: Piece, to: Movable }
+  - { kind: generalization, from: Pawn, to: Piece }
+  - { kind: generalization, from: Knight, to: Piece }
+  - { kind: aggregation, from: Piece, to: Color, role: color, multiplicity: '1' }
+  - { kind: aggregation, from: Piece, to: Position, role: position, multiplicity: '1' }
+  - { kind: aggregation, from: Board, to: Piece, role: pieces, multiplicity: '*' }
+  - { kind: composition, from: Board, to: Board.Dice, role: dice, multiplicity: '1' }
+  - { kind: nesting, from: Board.Dice, to: Board }
+  - { kind: aggregation, from: Player, to: Piece, role: piece, multiplicity: '1' }
+  - { kind: composition, from: Game, to: Board, role: board, multiplicity: '1' }
+  - { kind: composition, from: Game, to: Player, role: players, multiplicity: '*' }
+notes: >-
+  Board.Dice is a non-static inner class, created in Board's constructor (composition, 1). Game's
+  constructor creates the Board and fills the Player[] array with new Player(...), so both are
+  compositions; the array gives "*". Piece gets its Color and Position from constructor parameters,
+  so the rule makes both aggregations, even though one is an enum and the other a record. Hidden by
+  default: the accessors Piece.getColor, getPosition, Player.getName, getScore, setScore and
+  Game.getTurn, and the dependencies Player to Board, Movable to Position and Game to Pawn, Color and
+  Position (locals, new and the static call Color.values()). Piece.moveTo also writes the position
+  field from a parameter, which only confirms the aggregation. Piece.canReach is abstract.

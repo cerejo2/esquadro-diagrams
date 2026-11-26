@@ -1,0 +1,20 @@
+kind: java.package
+source: original
+nodes:
+  - { name: loja.a, kind: package }
+  - { name: loja.b, kind: package }
+  - { name: loja.c, kind: package }
+  - { name: loja.d, kind: package }
+  - { name: loja.e, kind: package }
+  - { name: loja.f, kind: package }
+edges:
+  - { kind: dependency, from: loja.c, to: loja.b }
+  - { kind: dependency, from: loja.d, to: loja.b }
+  - { kind: dependency, from: loja.e, to: loja.b }
+  - { kind: dependency, from: loja.f, to: loja.a }
+notes: >-
+  Three packages declare a class Item. In loja.c, Item is the package's own class, which hides both
+  on-demand imports, and Outro comes from loja.b. In loja.d the single-type import of loja.b.Item wins over
+  loja.a.*. In loja.e, Item is in both loja.a.* and loja.b.*: ambiguous, so it is not linked and a warning
+  is emitted; Outro is only in loja.b. In loja.f, loja.a.Item is fully qualified. The package diagram is
+  used because the class names repeat across packages.
