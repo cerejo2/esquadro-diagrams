@@ -1,0 +1,35 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: lib.sh, kind: script }
+  - { name: greet.sh, kind: script }
+  - { name: report.sh, kind: script }
+  - { name: trim, kind: function }
+  - { name: upper, kind: function }
+  - { name: repeat_char, kind: function }
+  - { name: banner, kind: function }
+  - { name: is_number, kind: function }
+  - { name: greet_one, kind: function }
+  - { name: print_row, kind: function }
+  - { name: main, kind: function }
+edges:
+  - { kind: source, from: greet.sh, to: lib.sh }
+  - { kind: source, from: report.sh, to: lib.sh }
+  - { kind: call, from: banner, to: upper }
+  - { kind: call, from: banner, to: trim }
+  - { kind: call, from: banner, to: repeat_char }
+  - { kind: call, from: greet.sh, to: banner }
+  - { kind: call, from: greet.sh, to: greet_one }
+  - { kind: call, from: greet_one, to: trim }
+  - { kind: call, from: greet_one, to: upper }
+  - { kind: call, from: report.sh, to: main }
+  - { kind: call, from: main, to: banner }
+  - { kind: call, from: main, to: print_row }
+  - { kind: call, from: print_row, to: trim }
+  - { kind: call, from: print_row, to: is_number }
+notes: >-
+  One library loaded two ways: "source lib.sh" in greet.sh and ". ./lib.sh" in report.sh, both
+  literal paths, so no diagnostic is expected. Calls cross files: the scripts call functions defined
+  in lib.sh. Covers calls inside nested $(...) (banner), after || (greet.sh), as an if condition
+  (print_row -> is_number) and inside a while loop fed by a redirection (main -> print_row).
+  The top-level code of lib.sh (the load guard) calls no function, so lib.sh has no outgoing call edges.

@@ -1,0 +1,14 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: run, kind: script }
+  - { name: posix, kind: script }
+  - { name: step, kind: function }
+  - { name: say, kind: function }
+edges:
+  - { kind: call, from: run, to: step }
+  - { kind: call, from: step, to: posix }
+  - { kind: call, from: posix, to: say }
+notes: >-
+  No extensions. run has "#!/usr/bin/env bash" and posix "#!/bin/sh", so both are scripts; helper.py
+  ("#!/usr/bin/env python3") and README (no shebang) are left out. step runs ./posix by path.

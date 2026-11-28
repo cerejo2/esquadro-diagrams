@@ -1,0 +1,17 @@
+kind: bash.flowchart
+source: original
+options:
+  entry: script
+counts:
+  nodes:
+    terminator: 3
+    decision: 1
+    subroutine: 1
+    io: 1
+  edges:
+    flow: 5
+calls: [saudação]
+notes: >-
+  exige_nome "$1" || exit 2 is one decision on the call (no separate subroutine, the analyzer's convention
+  for a call used as a condition), with exit 2 on "no". Then the saudação subroutine, the heredoc as I/O
+  and the end. CRLF must not hide the exit, nor the heredoc end marker.

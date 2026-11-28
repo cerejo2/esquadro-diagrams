@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Functions defined inside if, and names with - . and ::
+if [[ -n $DEBUG ]]; then
+  log::write() { printf '[debug] %s\n' "$*" >&2; }
+else
+  log::write() { :; }
+fi
+
+clean-up() {
+  log::write "cleaning"
+  rm -f "$TMP"
+}
+
+ui.banner() { log::write "banner"; }
+
+trap clean-up EXIT
+trap 'log::write bye' INT
+ui.banner

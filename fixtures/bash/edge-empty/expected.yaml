@@ -1,0 +1,7 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: empty.sh, kind: script }
+  - { name: notes.sh, kind: script }
+edges: []
+notes: An empty file and a file with only comments. Each is a script node with nothing in it.

@@ -1,0 +1,27 @@
+kind: bash.dependency
+source: original
+nodes:
+  - { name: subst.sh, kind: script }
+  - { name: pipes.bash, kind: script }
+  - { name: date, kind: external }
+  - { name: tr, kind: external }
+  - { name: ls, kind: external }
+  - { name: grep, kind: external }
+  - { name: wc, kind: external }
+  - { name: sort, kind: external }
+  - { name: uniq, kind: external }
+  - { name: head, kind: external }
+  - { name: diff, kind: external }
+edges:
+  - { kind: uses, from: subst.sh, to: date }
+  - { kind: uses, from: subst.sh, to: tr }
+  - { kind: uses, from: pipes.bash, to: ls }
+  - { kind: uses, from: pipes.bash, to: grep }
+  - { kind: uses, from: pipes.bash, to: wc }
+  - { kind: uses, from: pipes.bash, to: sort }
+  - { kind: uses, from: pipes.bash, to: uniq }
+  - { kind: uses, from: pipes.bash, to: tr }
+  - { kind: uses, from: pipes.bash, to: head }
+  - { kind: uses, from: pipes.bash, to: diff }
+notes: >-
+  Redirections to /dev/null and the here-string are not files. No rm or ls from the array keys.

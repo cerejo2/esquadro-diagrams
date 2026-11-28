@@ -1,0 +1,35 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: backup.sh, kind: script }
+  - { name: usage, kind: function }
+  - { name: log, kind: function }
+  - { name: die, kind: function }
+  - { name: cleanup, kind: function }
+  - { name: on_interrupt, kind: function }
+  - { name: parse_args, kind: function }
+  - { name: archive_one, kind: function }
+  - { name: rotate, kind: function }
+  - { name: main, kind: function }
+edges:
+  - { kind: call, from: backup.sh, to: main }
+  - { kind: call, from: main, to: parse_args }
+  - { kind: call, from: main, to: usage }
+  - { kind: call, from: main, to: die }
+  - { kind: call, from: main, to: archive_one }
+  - { kind: call, from: main, to: rotate }
+  - { kind: call, from: main, to: log }
+  - { kind: call, from: main, to: cleanup, label: trap }
+  - { kind: call, from: main, to: on_interrupt, label: trap }
+  - { kind: call, from: parse_args, to: usage }
+  - { kind: call, from: parse_args, to: die }
+  - { kind: call, from: cleanup, to: log }
+  - { kind: call, from: on_interrupt, to: die }
+  - { kind: call, from: archive_one, to: log }
+  - { kind: call, from: archive_one, to: die }
+  - { kind: call, from: rotate, to: log }
+notes: >-
+  Covers getopts inside a function with a case per option, calls after || and inside { ...; },
+  a call inside a while loop at the end of a pipeline (rotate -> log), and two traps
+  (trap cleanup EXIT, trap on_interrupt INT TERM) that give call edges with label trap.
+  External commands (basename, date, tar, mv, ls, tail, rm, mkdir, mktemp) are hidden by default.

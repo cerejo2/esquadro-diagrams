@@ -1,0 +1,24 @@
+kind: bash.flowchart
+source: original
+options:
+  entry: script
+counts:
+  nodes:
+    terminator: 7
+    process: 3
+    decision: 6
+    io: 8
+  edges:
+    flow: 24
+calls: []
+notes: >-
+  The file has no extension; it is detected by its #!/bin/bash shebang.
+  Terminators: the start, exit 2 (fewer than 1 argument), four exit 1 and the final exit 0;
+  no separate "end" node, because the script ends with exit 0.
+  Decisions, in order: "fewer than 1 argument?" ($# -lt 1), "SRC is not a folder?" (! -d),
+  "SRC/notes is not a file?" (! -f), "PREFIX empty?" (-z), "PREFIX/bin is a folder?" (-d),
+  "PREFIX/bin is a file?" (-f); each elif is its own decision on the "no" exit of the one before.
+  Processes: the two assignments (SRC, PREFIX) as one block, mkdir, and cp + chmod as one block.
+  I/O: the eight echo commands (usage, four errors, "Using", "Created", "Installed").
+  Flow edges count every arrow, with the ends of an if/elif chain joining straight into the next
+  node (no connector nodes). No function calls, so calls is empty.

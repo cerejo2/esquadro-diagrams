@@ -1,0 +1,13 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: app.sh, kind: script }
+  - { name: util.sh, kind: script }
+  - { name: util_hello, kind: function }
+edges:
+  - { kind: source, from: app.sh, to: util.sh }
+  - { kind: call, from: app.sh, to: util_hello }
+notes: >-
+  source "$DIR/lib/util.sh" depends on a variable: a warn diagnostic and a guessed source edge (lower
+  confidence), found by its literal end lib/util.sh. "${DIR}/lib/absent.sh" matches no file: a warn
+  diagnostic and no edge.

@@ -1,0 +1,20 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: subst.sh, kind: script }
+  - { name: pipes.bash, kind: script }
+  - { name: now, kind: function }
+  - { name: shout, kind: function }
+  - { name: list, kind: function }
+  - { name: keep, kind: function }
+  - { name: tally, kind: function }
+edges:
+  - { kind: call, from: subst.sh, to: now }
+  - { kind: call, from: subst.sh, to: shout }
+  - { kind: call, from: pipes.bash, to: list }
+  - { kind: call, from: pipes.bash, to: keep }
+  - { kind: call, from: pipes.bash, to: tally }
+notes: >-
+  Calls inside $( ), backticks, nested $( "$( )" ), a [ ] test, array literals, an eight-stage pipeline and
+  <( ) process substitutions. The words rm and ls in the associative array are keys, not commands.
+  External commands are hidden (default options).

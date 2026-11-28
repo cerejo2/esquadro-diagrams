@@ -1,0 +1,17 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: tool, kind: script }
+  - { name: log::write, kind: function }
+  - { name: clean-up, kind: function }
+  - { name: ui.banner, kind: function }
+edges:
+  - { kind: call, from: clean-up, to: log::write }
+  - { kind: call, from: ui.banner, to: log::write }
+  - { kind: call, from: tool, to: clean-up }
+  - { kind: call, from: tool, to: log::write }
+  - { kind: call, from: tool, to: ui.banner }
+notes: >-
+  No extension: detected by the "#!/usr/bin/env bash" shebang. log::write is defined in both branches of
+  an if; it is one function node (an info diagnostic says both bodies are analyzed). Function names use
+  -, . and ::. tool -> clean-up and tool -> log::write come from trap (a bare handler and a quoted one).

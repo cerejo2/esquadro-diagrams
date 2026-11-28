@@ -1,0 +1,37 @@
+#!/bin/bash
+# setup - copies the "notes" tool into <prefix>/bin (default prefix: ~/.local).
+# Usage: setup <source-folder> [prefix]
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: setup <source-folder> [prefix]" >&2
+    exit 2
+fi
+
+SRC=$1
+PREFIX=${2-$HOME/.local}
+
+if [[ ! -d $SRC ]]; then
+    echo "setup: $SRC is not a folder" >&2
+    exit 1
+elif [[ ! -f $SRC/notes ]]; then
+    echo "setup: $SRC has no notes script" >&2
+    exit 1
+elif [[ -z $PREFIX ]]; then
+    echo "setup: the prefix is empty" >&2
+    exit 1
+fi
+
+if [[ -d $PREFIX/bin ]]; then
+    echo "Using $PREFIX/bin"
+elif [[ -f $PREFIX/bin ]]; then
+    echo "setup: $PREFIX/bin is a file, not a folder" >&2
+    exit 1
+else
+    mkdir -p "$PREFIX/bin"
+    echo "Created $PREFIX/bin"
+fi
+
+cp "$SRC/notes" "$PREFIX/bin/notes"
+chmod 755 "$PREFIX/bin/notes"
+echo "Installed notes into $PREFIX/bin"
+exit 0

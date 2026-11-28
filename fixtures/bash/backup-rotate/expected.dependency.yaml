@@ -1,0 +1,30 @@
+kind: bash.dependency
+source: original
+nodes:
+  - { name: backup.sh, kind: script }
+  - { name: basename, kind: external }
+  - { name: date, kind: external }
+  - { name: dirname, kind: external }
+  - { name: tar, kind: external }
+  - { name: mv, kind: external }
+  - { name: ls, kind: external }
+  - { name: tail, kind: external }
+  - { name: rm, kind: external }
+  - { name: mkdir, kind: external }
+  - { name: mktemp, kind: external }
+edges:
+  - { kind: uses, from: backup.sh, to: basename }
+  - { kind: uses, from: backup.sh, to: date }
+  - { kind: uses, from: backup.sh, to: dirname }
+  - { kind: uses, from: backup.sh, to: tar }
+  - { kind: uses, from: backup.sh, to: mv }
+  - { kind: uses, from: backup.sh, to: ls }
+  - { kind: uses, from: backup.sh, to: tail }
+  - { kind: uses, from: backup.sh, to: rm }
+  - { kind: uses, from: backup.sh, to: mkdir }
+  - { kind: uses, from: backup.sh, to: mktemp }
+notes: >-
+  One uses edge per external command, whatever the function that runs it (basename and rm run twice).
+  Builtins (echo, local, shift, trap, getopts, read, exit) and project functions are not dependencies.
+  No file nodes: the only redirections are >&2 and 2>/dev/null, and every argument of mv and rm
+  is a variable ("$tarball", "$WORKDIR", "$old"), which the rule leaves out because it only reads literal paths.

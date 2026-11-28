@@ -1,0 +1,14 @@
+kind: bash.dependency
+source: original
+nodes:
+  - { name: gen.sh, kind: script }
+  - { name: date, kind: external }
+  - { name: cat, kind: external }
+  - { name: out.conf, kind: io }
+edges:
+  - { kind: uses, from: gen.sh, to: date }
+  - { kind: uses, from: gen.sh, to: cat }
+  - { kind: uses, from: gen.sh, to: out.conf }
+notes: >-
+  The rm -rf inside the first heredoc is text written to out.conf, so rm is not a dependency.
+  The file redirect sits inside the heredoc redirect (cat <<EOF > out.conf).

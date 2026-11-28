@@ -1,0 +1,21 @@
+kind: bash.flowchart
+source: original
+options:
+  entry: script
+counts:
+  nodes:
+    terminator: 3
+    decision: 5
+    subroutine: 2
+    io: 1
+  edges:
+    flow: 15
+calls: [show_help, handle]
+notes: >-
+  Terminators: start, exit 0 (help) and the end. Decisions: the for loop, the case on f (one exit per item:
+  "-h | --help", "*.txt | *.md" and "outro"), the while read loop, and the two && lists.
+  continue inside the case goes back to the for decision; the continue in the while goes back to the
+  while decision; break 2 leaves both loops and joins the for loop's "no" exit at echo "done".
+  Flow edges: start->for, for->case, case->show_help, show_help->exit, case(*)->for, case(txt)->while,
+  while->empty?, empty?(yes)->while, empty?(no)->END?, END?(no)->handle, handle->while, while(no)->for,
+  for(no)->echo, END?(yes)->echo, echo->end.

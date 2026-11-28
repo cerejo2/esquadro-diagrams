@@ -1,0 +1,15 @@
+kind: bash.dependency
+source: original
+nodes:
+  - { name: lib.sh, kind: script }
+  - { name: greet.sh, kind: script }
+  - { name: report.sh, kind: script }
+  - { name: $file, kind: io }
+edges:
+  - { kind: source, from: greet.sh, to: lib.sh }
+  - { kind: source, from: report.sh, to: lib.sh }
+  - { kind: uses, from: report.sh, to: $file }
+notes: >-
+  The three scripts only run builtins (printf, echo, read, local) and each other's functions, so there
+  are no external commands. report.sh reads the CSV through the redirection done <"$file"; the name is
+  a variable, so the file node is called $file (with lower confidence).

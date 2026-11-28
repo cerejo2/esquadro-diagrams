@@ -1,0 +1,11 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: ola.sh, kind: script }
+  - { name: saudação, kind: function }
+  - { name: exige_nome, kind: function }
+edges:
+  - { kind: call, from: ola.sh, to: exige_nome }
+  - { kind: call, from: ola.sh, to: saudação }
+notes: >-
+  The file starts with a UTF-8 BOM, has CRLF line ends and accented names (a function called saudação).

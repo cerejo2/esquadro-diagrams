@@ -1,0 +1,12 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: gen.sh, kind: script }
+  - { name: stamp, kind: function }
+  - { name: helper, kind: function }
+edges:
+  - { kind: call, from: gen.sh, to: stamp }
+notes: >-
+  Heredoc bodies are text, not code: the "helper() { ... }" and "function bogus" lines inside them define
+  nothing. The unquoted heredoc expands $(stamp), so stamp is called; the quoted one (<<'RAW') does not
+  expand $(helper), so helper is never called.

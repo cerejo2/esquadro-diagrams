@@ -1,0 +1,11 @@
+kind: bash.flowchart
+source: original
+options:
+  entry: notes.sh
+counts:
+  nodes:
+    terminator: 2
+  edges:
+    flow: 1
+calls: []
+notes: Only comments, so the flowchart is the start joined to the end.

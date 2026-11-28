@@ -1,0 +1,8 @@
+kind: bash.callgraph
+source: original
+nodes:
+  - { name: setup, kind: script }
+edges: []
+notes: >-
+  A script with no functions: the call graph is a single script node named after the file,
+  which has no extension. External commands (mkdir, cp, chmod) are hidden by default.
