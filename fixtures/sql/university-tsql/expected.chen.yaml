@@ -1,0 +1,25 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: DOCENTE, kind: entity, attributes: [num_mec, nome, gabinete] }
+  - { name: UC, kind: entity, attributes: [codigo, designacao, ects] }
+  - { name: ALUNO, kind: entity, attributes: [nmec, nome, email, data_nasc] }
+  - { name: coordena, kind: relationship, attributes: [] }
+  - { name: rege, kind: relationship, attributes: [] }
+  - { name: inscricao, kind: relationship, attributes: [nota, data_inscricao] }
+edges:
+  - { kind: participation, from: DOCENTE, to: coordena, multiplicity: 'N' }
+  - { kind: participation, from: DOCENTE, to: coordena, multiplicity: '1' }
+  - { kind: participation, from: UC, to: rege, multiplicity: 'N', total: true }
+  - { kind: participation, from: DOCENTE, to: rege, multiplicity: '1' }
+  - { kind: participation, from: ALUNO, to: inscricao, multiplicity: 'M' }
+  - { kind: participation, from: UC, to: inscricao, multiplicity: 'N' }
+notes: >-
+  Undoes the ER-to-relational mapping (PROMPT.md 7.4). Entity attributes are the non-FK columns; the PK
+  (underlined) is DOCENTE.num_mec, UC.codigo, ALUNO.nmec. Participation edges go from the entity to the
+  diamond; multiplicity is the cardinality written on that line, and total is a double line on the entity
+  side. coordena is a recursive 1:N (nullable FK, so no total participation; roles are not inferable from
+  the DDL). rege is 1:N with UC.regente NOT NULL, so UC participates totally. INSCRICAO has a PK made only of
+  FKs to two tables, so it becomes the M:N diamond inscricao with nota and data_inscricao as its attributes;
+  M goes to the table of the first FK column in the PK. Diamond names come from the constraint names
+  (coordena, rege) or from the associative table in lower case (inscricao).

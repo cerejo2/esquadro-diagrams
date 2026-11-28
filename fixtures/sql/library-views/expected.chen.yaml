@@ -1,0 +1,21 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: EMPRESTIMO, kind: entity, attributes: [id, saida, entrega] }
+  - { name: LIVRO, kind: entity, attributes: [isbn, titulo, ano] }
+  - { name: EXEMPLAR, kind: entity, attributes: [id, estado] }
+  - { name: LEITOR, kind: entity, attributes: [num, nome] }
+  - { name: copia_de, kind: relationship, attributes: [] }
+  - { name: requisita, kind: relationship, attributes: [] }
+  - { name: pede, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: EXEMPLAR, to: copia_de, multiplicity: 'N', total: true }
+  - { kind: participation, from: LIVRO, to: copia_de, multiplicity: '1' }
+  - { kind: participation, from: EMPRESTIMO, to: requisita, multiplicity: 'N', total: true }
+  - { kind: participation, from: EXEMPLAR, to: requisita, multiplicity: '1' }
+  - { kind: participation, from: EMPRESTIMO, to: pede, multiplicity: 'N', total: true }
+  - { kind: participation, from: LEITOR, to: pede, multiplicity: '1' }
+notes: >-
+  Views are not part of the ER diagram. Every table has a PK without FKs, so all four are entities; the three
+  FKs are outside the PKs and NOT NULL, so they are 1:N with total participation of the FK side. Diamond names
+  come from the constraint names, including the column-level CONSTRAINT copia_de REFERENCES lib.LIVRO.

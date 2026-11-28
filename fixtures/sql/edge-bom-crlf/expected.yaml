@@ -1,0 +1,8 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: Armazém, kind: table, attributes: [Código, Localização] }
+  - { name: Prateleira, kind: table, attributes: [Número, Armazém, Descrição] }
+edges:
+  - { kind: foreign-key, from: Prateleira, to: Armazém, fromColumn: Armazém, toColumn: Código }
+notes: Edge case. UTF-8 with a BOM, CRLF line ends, GO batches and accented unquoted names.

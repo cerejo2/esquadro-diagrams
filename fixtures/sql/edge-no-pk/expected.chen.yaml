@@ -1,0 +1,11 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: sensor, kind: entity, attributes: [serie, local] }
+  - { name: leitura, kind: entity, attributes: [instante, valor] }
+  - { name: nota, kind: entity, attributes: [texto] }
+  - { name: mede, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: leitura, to: mede, multiplicity: 'N', total: true }
+  - { kind: participation, from: sensor, to: mede, multiplicity: '1' }
+notes: Edge case. A table without a PK is an entity; its FK is an ordinary 1:N relationship.

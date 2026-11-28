@@ -1,0 +1,10 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: artigo, kind: table, attributes: [ref, preco, qtd, armazem] }
+  - { name: armazem, kind: table, attributes: [id, cidade] }
+edges:
+  - { kind: foreign-key, from: artigo, to: armazem, fromColumn: armazem, toColumn: id }
+notes: >-
+  Edge case. Comments between a column name and its type, inside type arguments, between NOT and NULL,
+  before a comma and inside REFERENCES; a commented-out column; a nested block comment.

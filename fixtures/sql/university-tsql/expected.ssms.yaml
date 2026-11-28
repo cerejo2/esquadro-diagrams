@@ -1,0 +1,16 @@
+kind: sql.ssms
+source: original
+nodes:
+  - { name: DOCENTE, kind: table, attributes: [num_mec, nome, gabinete, coordenador] }
+  - { name: UC, kind: table, attributes: [codigo, designacao, ects, regente] }
+  - { name: ALUNO, kind: table, attributes: [nmec, nome, email, data_nasc] }
+  - { name: INSCRICAO, kind: table, attributes: [nmec_aluno, codigo_uc, nota, data_inscricao] }
+edges:
+  - { kind: foreign-key, from: DOCENTE, to: DOCENTE, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: UC, to: DOCENTE, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: INSCRICAO, to: ALUNO, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: INSCRICAO, to: UC, fromMultiplicity: '*', multiplicity: '1' }
+notes: >-
+  SQL Server database diagram: one line per FK constraint, a key at the PK end and the infinity sign at the
+  FK end ('*'), or a key at both ends ('1') when the FK columns are the PK or UNIQUE. Columns are names only,
+  as the Standard view shows them. Connectors attach to the box, not to a column, so no fromColumn/toColumn.

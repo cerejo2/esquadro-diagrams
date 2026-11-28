@@ -1,0 +1,30 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: categoria, kind: entity, attributes: [id, nome] }
+  - { name: produto, kind: entity, attributes: [id, sku, nome, preco, stock] }
+  - { name: cliente, kind: entity, attributes: [id, nome, email, criado_em] }
+  - { name: cartao_pontos, kind: entity, attributes: [numero, pontos] }
+  - { name: pedido, kind: entity, attributes: [id, estado, feito_em] }
+  - { name: pertence, kind: relationship, attributes: [] }
+  - { name: tem_cartao, kind: relationship, attributes: [] }
+  - { name: faz, kind: relationship, attributes: [] }
+  - { name: linha_pedido, kind: relationship, attributes: [quantidade, preco_unitario] }
+edges:
+  - { kind: participation, from: produto, to: pertence, multiplicity: 'N', total: true }
+  - { kind: participation, from: categoria, to: pertence, multiplicity: '1' }
+  - { kind: participation, from: cartao_pontos, to: tem_cartao, multiplicity: '1', total: true }
+  - { kind: participation, from: cliente, to: tem_cartao, multiplicity: '1' }
+  - { kind: participation, from: pedido, to: faz, multiplicity: 'N' }
+  - { kind: participation, from: cliente, to: faz, multiplicity: '1' }
+  - { kind: participation, from: pedido, to: linha_pedido, multiplicity: 'M' }
+  - { kind: participation, from: produto, to: linha_pedido, multiplicity: 'N' }
+notes: >-
+  Entity attributes are the non-FK columns; the PKs (underlined) are categoria.id, produto.id, cliente.id,
+  cartao_pontos.numero and pedido.id. Participation edges go from the entity to the diamond; multiplicity is
+  the cardinality on that line, total a double line on the entity side. pertence is 1:N with a NOT NULL FK
+  (total for produto). tem_cartao is 1:1 because cartao_pontos.cliente_id is UNIQUE, and total for
+  cartao_pontos because it is NOT NULL. faz is 1:N with a nullable FK (no total). linha_pedido has a PK made
+  only of FKs to two tables, so it is the M:N diamond (M for the first PK column, pedido_id) with quantidade
+  and preco_unitario as attributes. Diamond names come from the constraint names, except linha_pedido, which
+  is the associative table in lower case; its own constraint names fk_linha_* are not used.

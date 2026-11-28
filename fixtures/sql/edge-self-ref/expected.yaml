@@ -1,0 +1,12 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: membro, kind: table, attributes: [id, nome, padrinho, orientador] }
+  - { name: pasta, kind: table, attributes: [id, mae, nome] }
+edges:
+  - { kind: foreign-key, from: membro, to: membro, fromColumn: padrinho, toColumn: id }
+  - { kind: foreign-key, from: membro, to: membro, fromColumn: orientador, toColumn: id }
+  - { kind: foreign-key, from: pasta, to: pasta, fromColumn: mae, toColumn: id }
+notes: >-
+  Edge case. Self-references, one of them declared before its column. Each is an edge from the table to
+  itself.

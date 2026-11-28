@@ -1,0 +1,10 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: aluno, kind: entity, attributes: [num, nome] }
+  - { name: cadeira, kind: entity, attributes: [codigo, ects] }
+  - { name: inscricao, kind: relationship, attributes: [nota] }
+edges:
+  - { kind: participation, from: aluno, to: inscricao, multiplicity: 'M' }
+  - { kind: participation, from: cadeira, to: inscricao, multiplicity: 'N' }
+notes: Edge case. The PK added by a late ALTER still makes inscricao an M:N relationship.

@@ -1,0 +1,9 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: sensor, kind: table, attributes: [serie, local] }
+  - { name: leitura, kind: table, attributes: [sensor, instante, valor] }
+  - { name: nota, kind: table, attributes: [texto] }
+edges:
+  - { kind: foreign-key, from: leitura, to: sensor, fromColumn: sensor, toColumn: serie }
+notes: Edge case. Tables without a PK are still drawn; leitura's FK has no column list and points at the PK.

@@ -1,0 +1,11 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: socio, kind: table, attributes: [id, codigo, nome] }
+  - { name: cartao, kind: table, attributes: [num, socio_codigo, emitido] }
+  - { name: cacifo, kind: table, attributes: [num, socio_id] }
+edges:
+  - { kind: foreign-key, from: cartao, to: socio, fromColumn: socio_codigo, toColumn: codigo }
+  - { kind: foreign-key, from: cacifo, to: socio, fromColumn: socio_id, toColumn: id }
+notes: >-
+  Edge case. cartao references the UNIQUE column socio.codigo, not the PK, so the arrow ends at that cell.

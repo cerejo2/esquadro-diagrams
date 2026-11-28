@@ -1,0 +1,13 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: equipa, kind: table, attributes: [id, nome] }
+  - { name: jogo, kind: table, attributes: [id, data, visitada, visitante, arbitro_id] }
+  - { name: arbitro, kind: table, attributes: [id, nome] }
+edges:
+  - { kind: foreign-key, from: jogo, to: equipa, fromColumn: visitada, toColumn: id }
+  - { kind: foreign-key, from: jogo, to: equipa, fromColumn: visitante, toColumn: id }
+  - { kind: foreign-key, from: jogo, to: arbitro, fromColumn: arbitro_id, toColumn: id }
+notes: >-
+  Edge case. Two FKs from jogo to equipa stay two edges, each from its own cell. The ALTER adds a column and a
+  constraint in one statement (T-SQL style, without a second ADD).

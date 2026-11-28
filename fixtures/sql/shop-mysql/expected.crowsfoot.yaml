@@ -1,0 +1,41 @@
+kind: sql.crowsfoot
+source: original
+nodes:
+  - { name: categoria, kind: entity, attributes: ['id: INT UNSIGNED', 'nome: VARCHAR(60)'] }
+  - name: produto
+    kind: entity
+    attributes:
+      - 'id: INT UNSIGNED'
+      - 'sku: CHAR(12)'
+      - 'nome: VARCHAR(120)'
+      - 'preco: DECIMAL(8,2)'
+      - 'stock: INT'
+      - 'categoria_id: INT UNSIGNED'
+  - name: cliente
+    kind: entity
+    attributes: ['id: INT UNSIGNED', 'nome: VARCHAR(100)', 'email: VARCHAR(160)', 'criado_em: DATETIME']
+  - { name: cartao_pontos, kind: entity, attributes: ['numero: CHAR(10)', 'pontos: INT', 'cliente_id: INT UNSIGNED'] }
+  - name: pedido
+    kind: entity
+    attributes:
+      - 'id: INT UNSIGNED'
+      - 'cliente_id: INT UNSIGNED'
+      - "estado: ENUM('aberto','pago','enviado','cancelado')"
+      - 'feito_em: DATETIME'
+  - name: linha_pedido
+    kind: entity
+    attributes:
+      - 'pedido_id: INT UNSIGNED'
+      - 'produto_id: INT UNSIGNED'
+      - 'quantidade: SMALLINT UNSIGNED'
+      - 'preco_unitario: DECIMAL(8,2)'
+edges:
+  - { kind: foreign-key, from: produto, to: categoria, fromMultiplicity: '0..*', multiplicity: '1' }
+  - { kind: foreign-key, from: cartao_pontos, to: cliente, fromMultiplicity: '0..1', multiplicity: '1' }
+  - { kind: foreign-key, from: pedido, to: cliente, fromMultiplicity: '0..*', multiplicity: '0..1' }
+  - { kind: foreign-key, from: linha_pedido, to: pedido, fromMultiplicity: '0..*', multiplicity: '1' }
+  - { kind: foreign-key, from: linha_pedido, to: produto, fromMultiplicity: '0..*', multiplicity: '1' }
+notes: >-
+  Crow's foot: columns with their types as written. The parent end is '1' for a NOT NULL FK and '0..1' when
+  the FK accepts NULL (pedido.cliente_id, guest checkouts). The child end is '0..1' when the FK is UNIQUE or the
+  PK (cartao_pontos.cliente_id), otherwise '0..*'.

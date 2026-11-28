@@ -1,0 +1,7 @@
+kind: sql.crowsfoot
+source: original
+nodes:
+  - { name: sala, kind: entity, attributes: ['num: INT', 'lugares: INT', 'tipo: CHAR(1)'] }
+  - { name: reserva, kind: entity, attributes: ['id: INT', 'sala: INT', 'inicio: TIME', 'fim: TIME'] }
+edges:
+  - { kind: foreign-key, from: reserva, to: sala, fromMultiplicity: '0..*', multiplicity: '1' }

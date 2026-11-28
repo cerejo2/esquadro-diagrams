@@ -1,0 +1,18 @@
+kind: sql.ssms
+source: original
+nodes:
+  - { name: categoria, kind: table, attributes: [id, nome] }
+  - { name: produto, kind: table, attributes: [id, sku, nome, preco, stock, categoria_id] }
+  - { name: cliente, kind: table, attributes: [id, nome, email, criado_em] }
+  - { name: cartao_pontos, kind: table, attributes: [numero, pontos, cliente_id] }
+  - { name: pedido, kind: table, attributes: [id, cliente_id, estado, feito_em] }
+  - { name: linha_pedido, kind: table, attributes: [pedido_id, produto_id, quantidade, preco_unitario] }
+edges:
+  - { kind: foreign-key, from: produto, to: categoria, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: cartao_pontos, to: cliente, fromMultiplicity: '1', multiplicity: '1' }
+  - { kind: foreign-key, from: pedido, to: cliente, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: linha_pedido, to: pedido, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: linha_pedido, to: produto, fromMultiplicity: '*', multiplicity: '1' }
+notes: >-
+  cartao_pontos.cliente_id is UNIQUE, so that line has a key at both ends (1:1). The two FKs of linha_pedido
+  are each only part of its PK, so both are 1:N.

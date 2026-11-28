@@ -1,0 +1,13 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: lista, kind: entity, attributes: [id, titulo, cor] }
+  - { name: tarefa, kind: entity, attributes: [id, texto, feita, prazo, notas] }
+  - { name: agrupa, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: tarefa, to: agrupa, multiplicity: 'N', total: true }
+  - { kind: participation, from: lista, to: agrupa, multiplicity: '1' }
+notes: >-
+  Entity attributes are the non-FK columns; the PKs (underlined) are lista.id and tarefa.id. agrupa is 1:N
+  from tarefa.lista_id, NOT NULL, so tarefa participates totally. The diamond name comes from the constraint.
+  Participation edges go from the entity to the diamond; multiplicity is the cardinality on that line.

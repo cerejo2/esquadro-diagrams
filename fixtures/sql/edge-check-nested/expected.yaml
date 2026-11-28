@@ -1,0 +1,10 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: sala, kind: table, attributes: [num, lugares, tipo] }
+  - { name: reserva, kind: table, attributes: [id, sala, inicio, fim] }
+edges:
+  - { kind: foreign-key, from: reserva, to: sala, fromColumn: sala, toColumn: num }
+notes: >-
+  Edge case. CHECK constraints with nested parentheses, commas and parentheses inside strings, a function
+  call, and an unnamed table-level CHECK before the FOREIGN KEY. None of them may split a column.

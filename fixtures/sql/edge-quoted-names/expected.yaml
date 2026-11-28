@@ -1,0 +1,11 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: Linha de Encomenda, kind: table, attributes: [Num Encomenda, Num Linha, Preço Unitário, 'Código "Artigo"'] }
+  - { name: Nota de Entrega, kind: table, attributes: [Id, Num Encomenda, Num Linha] }
+edges:
+  - { kind: foreign-key, from: Nota de Entrega, to: Linha de Encomenda, fromColumn: Num Encomenda, toColumn: Num Encomenda }
+  - { kind: foreign-key, from: Nota de Entrega, to: Linha de Encomenda, fromColumn: Num Linha, toColumn: Num Linha }
+notes: >-
+  Edge case. Names with spaces and accents in double quotes, brackets and backticks, mixed in one file, and a
+  doubled quote inside a quoted name.

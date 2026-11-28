@@ -1,0 +1,29 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: funcionario, kind: entity, attributes: [id_func, nome, nif, admitido_em] }
+  - { name: medico, kind: entity, attributes: [cedula, especialidade] }
+  - { name: enfermeiro, kind: entity, attributes: [turno] }
+  - { name: paciente, kind: entity, attributes: [id_paciente, nome, nascimento, contacto] }
+  - { name: consulta, kind: weak-entity, attributes: [n_consulta, data_hora, motivo] }
+  - { name: marca, kind: identifying-relationship, attributes: [] }
+  - { name: realiza, kind: relationship, attributes: [] }
+  - { name: assiste, kind: relationship, attributes: [] }
+edges:
+  - { kind: isa, from: medico, to: funcionario }
+  - { kind: isa, from: enfermeiro, to: funcionario }
+  - { kind: participation, from: consulta, to: marca, multiplicity: 'N', total: true }
+  - { kind: participation, from: paciente, to: marca, multiplicity: '1' }
+  - { kind: participation, from: consulta, to: realiza, multiplicity: 'N', total: true }
+  - { kind: participation, from: medico, to: realiza, multiplicity: '1' }
+  - { kind: participation, from: consulta, to: assiste, multiplicity: 'N' }
+  - { kind: participation, from: enfermeiro, to: assiste, multiplicity: '1' }
+notes: >-
+  Entity attributes are the non-FK columns. PK (underlined): funcionario.id_func, paciente.id_paciente;
+  consulta.n_consulta is the partial key (dashed underline, flag partial-key). medico and enfermeiro have a
+  PK that is only the FK to funcionario's PK, so they are specialisations (isa, child to parent) and keep only
+  their own columns. consulta's PK is the FK to paciente plus its own n_consulta, so consulta is a weak entity
+  with the identifying relationship marca (double diamond, total participation of consulta). realiza and
+  assiste are 1:N from FKs outside the PK: realiza is total for consulta (id_medico NOT NULL), assiste is not
+  (id_enfermeiro accepts NULL). Participation edges go from the entity to the diamond; multiplicity is the
+  cardinality on that line. Diamond names come from the constraint names.

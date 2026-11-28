@@ -1,0 +1,17 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: DOCENTE, kind: table, attributes: [num_mec, nome, gabinete, coordenador] }
+  - { name: UC, kind: table, attributes: [codigo, designacao, ects, regente] }
+  - { name: ALUNO, kind: table, attributes: [nmec, nome, email, data_nasc] }
+  - { name: INSCRICAO, kind: table, attributes: [nmec_aluno, codigo_uc, nota, data_inscricao] }
+edges:
+  - { kind: foreign-key, from: DOCENTE, to: DOCENTE, fromColumn: coordenador, toColumn: num_mec }
+  - { kind: foreign-key, from: UC, to: DOCENTE, fromColumn: regente, toColumn: num_mec }
+  - { kind: foreign-key, from: INSCRICAO, to: ALUNO, fromColumn: nmec_aluno, toColumn: nmec }
+  - { kind: foreign-key, from: INSCRICAO, to: UC, fromColumn: codigo_uc, toColumn: codigo }
+notes: >-
+  Columns in DDL order, names only. PK (underlined): DOCENTE(num_mec); UC(codigo); ALUNO(nmec);
+  INSCRICAO(nmec_aluno, codigo_uc). UNIQUE: ALUNO.email. DOCENTE.coordenador is a self-reference.
+  Must be skipped: IF DB_ID(...) CREATE DATABASE, USE, SET, DROP TABLE IF EXISTS, PRINT, the procedure
+  media_aluno (its SELECT names INSCRICAO) and the INSERTs. No views.

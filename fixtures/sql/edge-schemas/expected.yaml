@@ -1,0 +1,9 @@
+kind: sql.relational
+source: original
+counts:
+  nodes: { table: 4 }
+  edges: { foreign-key: 2 }
+notes: >-
+  Edge case. Two tables called cliente in the schemas vendas and rh are two tables, not one created twice.
+  expected.yaml cannot list two nodes with the same name, so edge-cases.test.ts checks which cliente each FK
+  reaches (vendas.fatura to vendas.cliente, rh.ferias to rh.cliente).

@@ -1,0 +1,11 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: lista, kind: table, attributes: [id, titulo, cor] }
+  - { name: tarefa, kind: table, attributes: [id, lista_id, texto, feita, prazo, notas] }
+edges:
+  - { kind: foreign-key, from: tarefa, to: lista, fromColumn: lista_id, toColumn: id }
+notes: >-
+  Columns in DDL order, names only. PK (underlined): lista(id); tarefa(id). UNIQUE: lista.titulo.
+  tarefa.notas has no type (valid in SQLite) and is followed by a comment. "lista" is quoted in one place
+  and bare in others. Must be skipped: PRAGMA, BEGIN TRANSACTION, CREATE INDEX, INSERT and COMMIT.

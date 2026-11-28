@@ -55,8 +55,12 @@ describe('fixture loading', () => {
     const [tiny] = await loadFixtures({ root, includePrivate: false });
     const results = await runFixture(tiny!);
     expect(results).toHaveLength(2);
-    // The SQL stub returns an empty model, so recall is 0 until Phase 1.
     expect(results.every((r) => r.model.lang === 'sql')).toBe(true);
-    expect(results.find((r) => r.expected.data.kind === 'sql.relational')?.score.nodes?.fn).toBe(1);
+    expect(results.find((r) => r.expected.data.kind === 'sql.relational')?.score.nodes).toMatchObject({
+      tp: 1,
+      fp: 0,
+      fn: 0,
+    });
+    expect(results.find((r) => r.expected.data.kind === 'sql.chen')?.score.counts?.accuracy).toBe(1);
   });
 });

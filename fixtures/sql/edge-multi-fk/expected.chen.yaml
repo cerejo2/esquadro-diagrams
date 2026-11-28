@@ -1,0 +1,19 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: equipa, kind: entity, attributes: [id, nome] }
+  - { name: jogo, kind: entity, attributes: [id, data] }
+  - { name: arbitro, kind: entity, attributes: [id, nome] }
+  - { name: recebe, kind: relationship, attributes: [] }
+  - { name: visita, kind: relationship, attributes: [] }
+  - { name: apita, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: jogo, to: recebe, multiplicity: 'N', total: true }
+  - { kind: participation, from: equipa, to: recebe, multiplicity: '1' }
+  - { kind: participation, from: jogo, to: visita, multiplicity: 'N', total: true }
+  - { kind: participation, from: equipa, to: visita, multiplicity: '1' }
+  - { kind: participation, from: jogo, to: apita, multiplicity: 'N' }
+  - { kind: participation, from: arbitro, to: apita, multiplicity: '1' }
+notes: >-
+  Edge case. Each FK is its own diamond, named after its constraint (the inline one included). arbitro_id
+  accepts NULL, so jogo's participation in apita is partial.

@@ -1,0 +1,16 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: membro, kind: entity, attributes: [id, nome] }
+  - { name: pasta, kind: entity, attributes: [id, nome] }
+  - { name: apadrinha, kind: relationship, attributes: [] }
+  - { name: orienta, kind: relationship, attributes: [] }
+  - { name: contem, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: membro, to: apadrinha, multiplicity: 'N' }
+  - { kind: participation, from: membro, to: apadrinha, multiplicity: '1' }
+  - { kind: participation, from: membro, to: orienta, multiplicity: 'N' }
+  - { kind: participation, from: membro, to: orienta, multiplicity: '1' }
+  - { kind: participation, from: pasta, to: contem, multiplicity: 'N', total: true }
+  - { kind: participation, from: pasta, to: contem, multiplicity: '1' }
+notes: Edge case. A recursive relationship has two lines from the same entity to its diamond.

@@ -1,0 +1,8 @@
+kind: sql.crowsfoot
+source: original
+nodes:
+  - { name: artigo, kind: entity, attributes: ['ref: VARCHAR(10)', 'preco: DECIMAL(9,2)', 'qtd: INT', 'armazem: INT'] }
+  - { name: armazem, kind: entity, attributes: ['id: INT', 'cidade: VARCHAR(30)'] }
+edges:
+  - { kind: foreign-key, from: artigo, to: armazem, fromMultiplicity: '0..*', multiplicity: '0..1' }
+notes: Edge case. The types must come out without the comments inside them.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-26T17:23:14.862Z",
+  "generatedAt": "2026-11-28T01:25:29.218Z",
   "languages": {
     "java": {
       "cases": 24,
@@ -46,6 +46,147 @@
         "correct": 70,
         "total": 75,
         "accuracy": 0.9333333333333333
+      }
+    },
+    "bash": {
+      "cases": 21,
+      "publicCases": 18,
+      "privateCases": 3,
+      "nodes": {
+        "tp": 94,
+        "fp": 4,
+        "fn": 0,
+        "precision": 0.9591836734693877,
+        "recall": 1,
+        "f1": 0.9791666666666666
+      },
+      "edgesStrict": {
+        "tp": 94,
+        "fp": 2,
+        "fn": 0,
+        "precision": 0.9791666666666666,
+        "recall": 1,
+        "f1": 0.9894736842105264
+      },
+      "edgesRelaxed": {
+        "tp": 94,
+        "fp": 2,
+        "fn": 0,
+        "precision": 0.9791666666666666,
+        "recall": 1,
+        "f1": 0.9894736842105264
+      },
+      "calls": {
+        "tp": 5,
+        "fp": 5,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1,
+        "f1": 0.6666666666666666
+      },
+      "counts": {
+        "correct": 132,
+        "total": 181,
+        "accuracy": 0.7292817679558011
+      }
+    },
+    "c": {
+      "cases": 38,
+      "publicCases": 22,
+      "privateCases": 16,
+      "nodes": {
+        "tp": 226,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "edgesStrict": {
+        "tp": 201,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "edgesRelaxed": {
+        "tp": 201,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "members": {
+        "tp": 199,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "roles": {
+        "correct": 25,
+        "total": 25,
+        "accuracy": 1
+      },
+      "multiplicities": {
+        "correct": 25,
+        "total": 25,
+        "accuracy": 1
+      }
+    },
+    "sql": {
+      "cases": 49,
+      "publicCases": 39,
+      "privateCases": 10,
+      "nodes": {
+        "tp": 211,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "edgesStrict": {
+        "tp": 195,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "edgesRelaxed": {
+        "tp": 195,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "members": {
+        "tp": 627,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "multiplicities": {
+        "correct": 210,
+        "total": 210,
+        "accuracy": 1
+      },
+      "columns": {
+        "correct": 116,
+        "total": 116,
+        "accuracy": 1
+      },
+      "counts": {
+        "correct": 32,
+        "total": 32,
+        "accuracy": 1
       }
     }
   }

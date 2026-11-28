@@ -1,0 +1,10 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: cor, kind: table, attributes: [id, nome] }
+  - { name: peca, kind: table, attributes: [id, cor] }
+edges:
+  - { kind: foreign-key, from: peca, to: cor, fromColumn: cor, toColumn: id }
+notes: >-
+  Edge case. dados.sql has only INSERTs (some without a semicolon, one with DDL inside a string); it adds
+  nothing and raises no warning.

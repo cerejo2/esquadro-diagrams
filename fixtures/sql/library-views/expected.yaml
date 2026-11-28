@@ -1,0 +1,27 @@
+kind: sql.relational
+source: original
+options: { showDependencies: true }
+nodes:
+  - { name: EMPRESTIMO, kind: table, attributes: [id, exemplar, leitor, saida, entrega] }
+  - { name: LIVRO, kind: table, attributes: [isbn, titulo, ano] }
+  - { name: EXEMPLAR, kind: table, attributes: [id, isbn, estado] }
+  - { name: LEITOR, kind: table, attributes: [num, nome] }
+  - { name: EM_ATRASO, kind: view }
+  - { name: LIVROS_POR_ANO, kind: view }
+edges:
+  - { kind: foreign-key, from: EXEMPLAR, to: LIVRO, fromColumn: isbn, toColumn: isbn }
+  - { kind: foreign-key, from: EMPRESTIMO, to: EXEMPLAR, fromColumn: exemplar, toColumn: id }
+  - { kind: foreign-key, from: EMPRESTIMO, to: LEITOR, fromColumn: leitor, toColumn: num }
+  - { kind: dependency, from: EM_ATRASO, to: EMPRESTIMO }
+  - { kind: dependency, from: EM_ATRASO, to: LEITOR }
+  - { kind: dependency, from: EM_ATRASO, to: EXEMPLAR }
+  - { kind: dependency, from: EM_ATRASO, to: LIVRO }
+  - { kind: dependency, from: LIVROS_POR_ANO, to: LIVRO }
+notes: >-
+  Old-style T-SQL with no semicolons: three CREATE TABLE in one batch, an ALTER TABLE followed by another on
+  the next line, INSERTs one per line. EMPRESTIMO is created inside IF ... BEGIN ... END and gets its FKs later
+  from one ALTER TABLE ... WITH CHECK ADD with two constraints. EXEMPLAR.isbn has REFERENCES without a column
+  list, so it points at LIVRO's PK. The CREATE SCHEMA inside EXEC is a string and must not count. Views are
+  drawn with the tables they read in FROM and JOIN (a nested join in parentheses included) as dependency
+  edges, which only appear with showDependencies. PK (underlined): EMPRESTIMO(id), LIVRO(isbn),
+  EXEMPLAR(id), LEITOR(num). Columns in DDL order, names only; node names have no schema.

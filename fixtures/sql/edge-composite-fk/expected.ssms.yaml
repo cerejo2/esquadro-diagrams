@@ -1,0 +1,10 @@
+kind: sql.ssms
+source: original
+nodes:
+  - { name: turma, kind: table, attributes: [ano, letra, sala] }
+  - { name: aluno, kind: table, attributes: [num, nome, turma_ano, turma_letra] }
+  - { name: horario, kind: table, attributes: [id, dia, t_ano, t_letra] }
+edges:
+  - { kind: foreign-key, from: aluno, to: turma, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: horario, to: turma, fromMultiplicity: '*', multiplicity: '1' }
+notes: Edge case. A composite FK is one line per constraint, not one per column.

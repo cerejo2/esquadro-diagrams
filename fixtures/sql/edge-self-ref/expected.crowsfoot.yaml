@@ -1,0 +1,9 @@
+kind: sql.crowsfoot
+source: original
+nodes:
+  - { name: membro, kind: entity, attributes: ['id: INT', 'nome: VARCHAR(50)', 'padrinho: INT', 'orientador: INT'] }
+  - { name: pasta, kind: entity, attributes: ['id: INT', 'mae: INT', 'nome: VARCHAR(30)'] }
+edges:
+  - { kind: foreign-key, from: membro, to: membro, fromMultiplicity: '0..*', multiplicity: '0..1' }
+  - { kind: foreign-key, from: membro, to: membro, fromMultiplicity: '0..*', multiplicity: '0..1' }
+  - { kind: foreign-key, from: pasta, to: pasta, fromMultiplicity: '0..*', multiplicity: '1' }

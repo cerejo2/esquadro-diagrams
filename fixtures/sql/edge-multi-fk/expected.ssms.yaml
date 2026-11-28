@@ -1,0 +1,11 @@
+kind: sql.ssms
+source: original
+nodes:
+  - { name: equipa, kind: table, attributes: [id, nome] }
+  - { name: jogo, kind: table, attributes: [id, data, visitada, visitante, arbitro_id] }
+  - { name: arbitro, kind: table, attributes: [id, nome] }
+edges:
+  - { kind: foreign-key, from: jogo, to: equipa, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: jogo, to: equipa, fromMultiplicity: '*', multiplicity: '1' }
+  - { kind: foreign-key, from: jogo, to: arbitro, fromMultiplicity: '*', multiplicity: '1' }
+notes: Edge case. One line per constraint, so two parallel lines between jogo and equipa.

@@ -1,0 +1,16 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: turma, kind: entity, attributes: [ano, letra, sala] }
+  - { name: aluno, kind: entity, attributes: [num, nome] }
+  - { name: horario, kind: entity, attributes: [id, dia] }
+  - { name: pertence, kind: relationship, attributes: [] }
+  - { name: marca, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: aluno, to: pertence, multiplicity: 'N', total: true }
+  - { kind: participation, from: turma, to: pertence, multiplicity: '1' }
+  - { kind: participation, from: horario, to: marca, multiplicity: 'N' }
+  - { kind: participation, from: turma, to: marca, multiplicity: '1' }
+notes: >-
+  Edge case. A composite FK outside the PK is a single 1:N relationship; it is total only when every FK column
+  is NOT NULL (aluno), not when they accept NULL (horario).

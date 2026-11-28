@@ -1,0 +1,29 @@
+kind: sql.crowsfoot
+source: original
+nodes:
+  - name: funcionario
+    kind: entity
+    attributes: ['id_func: integer', 'nome: text', 'nif: char(9)', 'admitido_em: date']
+  - { name: medico, kind: entity, attributes: ['id_func: integer', 'cedula: varchar(12)', 'especialidade: varchar(40)'] }
+  - { name: enfermeiro, kind: entity, attributes: ['id_func: integer', 'turno: varchar(10)'] }
+  - name: paciente
+    kind: entity
+    attributes: ['id_paciente: serial', 'nome: text', 'nascimento: date', 'contacto: varchar(20)']
+  - name: consulta
+    kind: entity
+    attributes:
+      - 'id_paciente: integer'
+      - 'n_consulta: smallint'
+      - 'data_hora: timestamptz'
+      - 'motivo: text'
+      - 'id_medico: integer'
+      - 'id_enfermeiro: integer'
+edges:
+  - { kind: foreign-key, from: medico, to: funcionario, fromMultiplicity: '0..1', multiplicity: '1' }
+  - { kind: foreign-key, from: enfermeiro, to: funcionario, fromMultiplicity: '0..1', multiplicity: '1' }
+  - { kind: foreign-key, from: consulta, to: paciente, fromMultiplicity: '0..*', multiplicity: '1' }
+  - { kind: foreign-key, from: consulta, to: medico, fromMultiplicity: '0..*', multiplicity: '1' }
+  - { kind: foreign-key, from: consulta, to: enfermeiro, fromMultiplicity: '0..*', multiplicity: '0..1' }
+notes: >-
+  medico and enfermeiro have a PK that is also the FK, so their child end is '0..1' (1:1); their FK is the PK,
+  hence NOT NULL, so the parent end is '1'. consulta.id_enfermeiro accepts NULL, so that parent end is '0..1'.

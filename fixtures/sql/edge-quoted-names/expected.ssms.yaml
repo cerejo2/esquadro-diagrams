@@ -1,0 +1,7 @@
+kind: sql.ssms
+source: original
+nodes:
+  - { name: Linha de Encomenda, kind: table, attributes: [Num Encomenda, Num Linha, Preço Unitário, 'Código "Artigo"'] }
+  - { name: Nota de Entrega, kind: table, attributes: [Id, Num Encomenda, Num Linha] }
+edges:
+  - { kind: foreign-key, from: Nota de Entrega, to: Linha de Encomenda, fromMultiplicity: '*', multiplicity: '1' }

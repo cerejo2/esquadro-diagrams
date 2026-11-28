@@ -1,0 +1,22 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: categoria, kind: table, attributes: [id, nome] }
+  - { name: produto, kind: table, attributes: [id, sku, nome, preco, stock, categoria_id] }
+  - { name: cliente, kind: table, attributes: [id, nome, email, criado_em] }
+  - { name: cartao_pontos, kind: table, attributes: [numero, pontos, cliente_id] }
+  - { name: pedido, kind: table, attributes: [id, cliente_id, estado, feito_em] }
+  - { name: linha_pedido, kind: table, attributes: [pedido_id, produto_id, quantidade, preco_unitario] }
+edges:
+  - { kind: foreign-key, from: produto, to: categoria, fromColumn: categoria_id, toColumn: id }
+  - { kind: foreign-key, from: cartao_pontos, to: cliente, fromColumn: cliente_id, toColumn: id }
+  - { kind: foreign-key, from: pedido, to: cliente, fromColumn: cliente_id, toColumn: id }
+  - { kind: foreign-key, from: linha_pedido, to: pedido, fromColumn: pedido_id, toColumn: id }
+  - { kind: foreign-key, from: linha_pedido, to: produto, fromColumn: produto_id, toColumn: id }
+notes: >-
+  Columns in DDL order, names only. PK (underlined): categoria(id); produto(id); cliente(id);
+  cartao_pontos(numero); pedido(id); linha_pedido(pedido_id, produto_id). UNIQUE: categoria.nome, produto.sku,
+  cliente.email, cartao_pontos.cliente_id. Every FK comes from ALTER TABLE ... ADD CONSTRAINT, and the last
+  ALTER TABLE adds two at once. UNIQUE KEY and KEY lines inside CREATE TABLE are indexes, not columns; the
+  ENUM list, COMMENT and the table options after the closing parenthesis must not break the parse.
+  dados.sql only has INSERTs and an UPDATE.

@@ -1,0 +1,12 @@
+kind: sql.crowsfoot
+source: original
+nodes:
+  - { name: socio, kind: entity, attributes: ['id: INT', 'codigo: CHAR(6)', 'nome: VARCHAR(60)'] }
+  - { name: cartao, kind: entity, attributes: ['num: INT', 'socio_codigo: CHAR(6)', 'emitido: DATE'] }
+  - { name: cacifo, kind: entity, attributes: ['num: INT', 'socio_id: INT'] }
+edges:
+  - { kind: foreign-key, from: cartao, to: socio, fromMultiplicity: '0..*', multiplicity: '1' }
+  - { kind: foreign-key, from: cacifo, to: socio, fromMultiplicity: '0..1', multiplicity: '0..1' }
+notes: >-
+  Edge case. The NOT NULL FK gives a mandatory parent (1); the UNIQUE FK that accepts NULL gives 0..1 on both
+  ends.

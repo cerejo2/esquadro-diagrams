@@ -1,0 +1,14 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: turma, kind: table, attributes: [ano, letra, sala] }
+  - { name: aluno, kind: table, attributes: [num, nome, turma_ano, turma_letra] }
+  - { name: horario, kind: table, attributes: [id, dia, t_ano, t_letra] }
+edges:
+  - { kind: foreign-key, from: aluno, to: turma, fromColumn: turma_ano, toColumn: ano }
+  - { kind: foreign-key, from: aluno, to: turma, fromColumn: turma_letra, toColumn: letra }
+  - { kind: foreign-key, from: horario, to: turma, fromColumn: t_ano, toColumn: ano }
+  - { kind: foreign-key, from: horario, to: turma, fromColumn: t_letra, toColumn: letra }
+notes: >-
+  Edge case: composite foreign keys. One edge per column pair. horario's FK has no column list, so its
+  columns pair with turma's PK in PK order.

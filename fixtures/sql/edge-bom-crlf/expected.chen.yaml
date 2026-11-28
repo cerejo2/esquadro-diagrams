@@ -1,0 +1,9 @@
+kind: sql.chen
+source: original
+nodes:
+  - { name: Armazém, kind: entity, attributes: [Código, Localização] }
+  - { name: Prateleira, kind: entity, attributes: [Número, Descrição] }
+  - { name: Guarda, kind: relationship, attributes: [] }
+edges:
+  - { kind: participation, from: Prateleira, to: Guarda, multiplicity: 'N', total: true }
+  - { kind: participation, from: Armazém, to: Guarda, multiplicity: '1' }

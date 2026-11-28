@@ -1,0 +1,10 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: inscricao, kind: table, attributes: [aluno, cadeira, nota] }
+  - { name: aluno, kind: table, attributes: [num, nome] }
+  - { name: cadeira, kind: table, attributes: [codigo, ects] }
+edges:
+  - { kind: foreign-key, from: inscricao, to: aluno, fromColumn: aluno, toColumn: num }
+  - { kind: foreign-key, from: inscricao, to: cadeira, fromColumn: cadeira, toColumn: codigo }
+notes: Edge case. Every ALTER TABLE is read before the CREATE TABLE it changes, and in another file.

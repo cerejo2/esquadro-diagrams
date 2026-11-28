@@ -1,0 +1,23 @@
+kind: sql.relational
+source: original
+nodes:
+  - { name: funcionario, kind: table, attributes: [id_func, nome, nif, admitido_em] }
+  - { name: medico, kind: table, attributes: [id_func, cedula, especialidade] }
+  - { name: enfermeiro, kind: table, attributes: [id_func, turno] }
+  - { name: paciente, kind: table, attributes: [id_paciente, nome, nascimento, contacto] }
+  - name: consulta
+    kind: table
+    attributes: [id_paciente, n_consulta, data_hora, motivo, id_medico, id_enfermeiro]
+edges:
+  - { kind: foreign-key, from: medico, to: funcionario, fromColumn: id_func, toColumn: id_func }
+  - { kind: foreign-key, from: enfermeiro, to: funcionario, fromColumn: id_func, toColumn: id_func }
+  - { kind: foreign-key, from: consulta, to: paciente, fromColumn: id_paciente, toColumn: id_paciente }
+  - { kind: foreign-key, from: consulta, to: medico, fromColumn: id_medico, toColumn: id_func }
+  - { kind: foreign-key, from: consulta, to: enfermeiro, fromColumn: id_enfermeiro, toColumn: id_func }
+notes: >-
+  Columns in DDL order, names only. PK (underlined): funcionario(id_func); medico(id_func);
+  enfermeiro(id_func); paciente(id_paciente); consulta(id_paciente, n_consulta). UNIQUE: funcionario.nif,
+  medico.cedula. Tables are created in schema clinica through search_path; node names have no schema.
+  Must be skipped: CREATE SCHEMA, SET search_path, the multi-table DROP, COMMENT ON (its string has an
+  escaped quote), CREATE INDEX, the function with a dollar-quoted body that contains a semicolon and the
+  word consulta, and the INSERT. GENERATED ALWAYS AS IDENTITY and serial are identity columns.

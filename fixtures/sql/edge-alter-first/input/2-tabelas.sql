@@ -1,0 +1,3 @@
+CREATE TABLE inscricao (aluno INT NOT NULL, cadeira CHAR(5) NOT NULL, nota SMALLINT);
+CREATE TABLE aluno (num INT PRIMARY KEY, nome VARCHAR(60));
+CREATE TABLE cadeira (codigo CHAR(5) PRIMARY KEY, ects SMALLINT);
