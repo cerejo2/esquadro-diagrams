@@ -1,0 +1,114 @@
+/*
+ * Esquadro design tokens: "technical paper".
+ * Names follow the design-system token compiler (--color-*, --font-*, --space-*).
+ * The values are the chosen direction (paper, drafting ink, one marker accent),
+ * not the generator's first suggestion. Diagram themes live in src/render/themes
+ * and do not read these: the UI theme and the diagram theme are independent.
+ */
+
+/* === PRIMITIVES === */
+:root {
+  --paper-50: #fbfaf6;
+  --paper-100: #f7f5f0;
+  --paper-200: #edeae2;
+  --paper-300: #d9d4c7;
+  --ink-900: #141b2b;
+  --ink-700: #1f3864;
+  --ink-500: #5b6474;
+  --marker-500: #e8590c;
+  --marker-700: #c2410c;
+  --night-900: #12161d;
+  --night-800: #191e27;
+  --night-700: #222833;
+  --night-600: #2c3340;
+}
+
+/* === SEMANTIC (light, default) === */
+:root {
+  color-scheme: light;
+  --color-background: var(--paper-100);
+  --color-foreground: var(--ink-900);
+  --color-primary: var(--ink-700);
+  --color-on-primary: #ffffff;
+  --color-accent: var(--marker-500); /* strokes, highlights, focus halo: never small text */
+  --color-accent-strong: var(--marker-700); /* CTA fill and accent text (5.2:1 on paper) */
+  --color-on-accent: #ffffff;
+  --color-card: #fffdf8;
+  --color-card-foreground: var(--ink-900);
+  --color-muted: var(--paper-200);
+  --color-muted-foreground: var(--ink-500);
+  --color-border: var(--paper-300);
+  --color-destructive: #b42318;
+  --color-on-destructive: #ffffff;
+  --color-ring: var(--ink-700);
+  --color-grid-minor: rgb(31 56 100 / 0.07);
+  --color-grid-major: rgb(31 56 100 / 0.13);
+  --color-highlight: rgb(232 89 12 / 0.14);
+}
+
+/* === SEMANTIC (dark: drafting table at night) === */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: var(--night-900);
+  --color-foreground: #e7eaf0;
+  --color-primary: #9db7e8;
+  --color-on-primary: #0e1420;
+  --color-accent: #ff7a33;
+  --color-accent-strong: #ff8a4c;
+  --color-on-accent: #12161d;
+  --color-card: var(--night-800);
+  --color-card-foreground: #e7eaf0;
+  --color-muted: var(--night-700);
+  --color-muted-foreground: #9aa3b2;
+  --color-border: var(--night-600);
+  --color-destructive: #f97066;
+  --color-on-destructive: #12161d;
+  --color-ring: #9db7e8;
+  --color-grid-minor: rgb(207 227 255 / 0.05);
+  --color-grid-major: rgb(207 227 255 / 0.1);
+  --color-highlight: rgb(255 122 51 / 0.18);
+}
+
+/* === TYPE, SPACE, MOTION === */
+:root {
+  --font-heading: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --font-hand: 'Patrick Hand', 'Comic Sans MS', cursive;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: clamp(28px, 3.2vw, 40px);
+  --text-hero: clamp(40px, 6vw, 76px);
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --grid-minor: 8px;
+  --grid-major: 40px;
+
+  --dur-fast: 150ms; /* hover, press */
+  --dur-base: 220ms; /* state changes */
+  --dur-layout: 360ms; /* nodes sliding to a new layout */
+  --dur-draw: 700ms; /* an edge drawing itself */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-layout: 0ms;
+    --dur-draw: 0ms;
+  }
+}
