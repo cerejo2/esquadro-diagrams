@@ -1,0 +1,34 @@
+kind: c.struct
+source: original
+nodes:
+  - name: List
+    kind: struct
+    stereotypes: [opaque]
+    attributes: ['- head: struct node*', '- length: size_t']
+    operations:
+      - '+ list_create(): List*'
+      - '+ list_destroy(plist: List**): void'
+      - '+ list_push_front(l: List*, value: int): void'
+      - '+ list_push_back(l: List*, value: int): void'
+      - '+ list_pop_front(l: List*, out: int*): int'
+      - '+ list_length(l: const List*): size_t'
+      - '+ list_sum(l: const List*): long'
+      - '+ list_reverse(l: List*): void'
+      - '- list_last(l: const List*): struct node*'
+  - name: node
+    kind: struct
+    attributes: ['- value: int', '- next: struct node*']
+    operations:
+      - '- node_new(value: int, next: struct node*): struct node*'
+      - '- node_free_all(n: struct node*): void'
+      - '- node_sum(n: const struct node*): long'
+edges:
+  - { kind: association, from: List, to: node, role: head, multiplicity: '0..1' }
+  - { kind: association, from: node, to: node, role: next, multiplicity: '0..1' }
+notes: >-
+  List is opaque: "typedef struct list List" in list.h, the fields in list.c, so one node named after the typedef,
+  with private fields. struct node has no typedef and keeps its tag; next points to the same struct (self-association).
+  Functions declared in list.h are public; the static ones in list.c are private and still belong to a type when the
+  name starts with the type name and the first parameter is (or the result is) a pointer to it: list_last belongs to
+  List, node_new (returns struct node*), node_free_all and node_sum to node. fill in main.c takes a List* but its name
+  does not start with "list", so it is not an operation. main is not part of any type.

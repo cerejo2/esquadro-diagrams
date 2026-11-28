@@ -1,0 +1,27 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Cell
+    kind: struct
+    attributes: ['+ value: int']
+  - name: Board
+    kind: struct
+    attributes:
+      - '+ rows: Cell*[8]'
+      - '+ extra: Cell**'
+      - '+ slots: Cell[BOARD_SIZE]'
+      - '+ history: Cell*'
+      - '+ focus: Cell*'
+      - '+ count: int'
+    operations: ['+ board_sum(b: const Board*): int']
+edges:
+  - { kind: association, from: Board, to: Cell, role: rows, multiplicity: '8' }
+  - { kind: association, from: Board, to: Cell, role: extra, multiplicity: '*' }
+  - { kind: composition, from: Board, to: Cell, role: slots, multiplicity: BOARD_SIZE }
+  - { kind: association, from: Board, to: Cell, role: history, multiplicity: '*' }
+  - { kind: association, from: Board, to: Cell, role: focus, multiplicity: '0..1' }
+notes: >-
+  rows is an array of 8 pointers: an association with multiplicity 8. extra is a pointer to pointers (*). slots holds
+  the cells by value: composition, with the macro name as multiplicity because macros are not expanded. history is a
+  plain pointer, but grid.c indexes it (b->history[i]), so it points to many (*, confidence 0.8). focus is never
+  indexed: 0..1.

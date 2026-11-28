@@ -1,0 +1,24 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Point
+    kind: struct
+    attributes: ['+ x: int', '+ y: int']
+  - name: frame
+    kind: struct
+    attributes: ['+ width: int', '+ height: int']
+  - name: Sprite
+    kind: struct
+    attributes:
+      - '+ frame: struct frame'
+      - '+ tint: struct {...}'
+      - '+ id: int'
+      - '+ label: const char*'
+      - '+ origin: Point'
+edges:
+  - { kind: composition, from: Sprite, to: frame, role: frame, multiplicity: '1' }
+  - { kind: composition, from: Sprite, to: Point, role: origin, multiplicity: '1' }
+notes: >-
+  struct frame is defined inside Sprite and has a tag, so it is a node of its own, held by value. The anonymous
+  struct of tint has no name to show, so it is not a node and the field type says struct {...}. The anonymous union
+  is a C11 anonymous member: its fields id and label are fields of Sprite.

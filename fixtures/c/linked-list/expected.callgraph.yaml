@@ -1,0 +1,41 @@
+kind: c.callgraph
+source: original
+options:
+  showMain: true
+nodes:
+  - { name: main, kind: function }
+  - { name: fill, kind: function }
+  - { name: list_create, kind: function }
+  - { name: list_destroy, kind: function }
+  - { name: list_push_front, kind: function }
+  - { name: list_push_back, kind: function }
+  - { name: list_pop_front, kind: function }
+  - { name: list_length, kind: function }
+  - { name: list_sum, kind: function }
+  - { name: list_reverse, kind: function }
+  - { name: list_last, kind: function }
+  - { name: node_new, kind: function }
+  - { name: node_free_all, kind: function }
+  - { name: node_sum, kind: function }
+edges:
+  - { kind: call, from: main, to: list_create }
+  - { kind: call, from: main, to: fill }
+  - { kind: call, from: main, to: list_push_back, label: '2' }
+  - { kind: call, from: main, to: list_reverse }
+  - { kind: call, from: main, to: list_length }
+  - { kind: call, from: main, to: list_sum }
+  - { kind: call, from: main, to: list_pop_front }
+  - { kind: call, from: main, to: list_destroy }
+  - { kind: call, from: fill, to: list_push_front }
+  - { kind: call, from: fill, to: fill }
+  - { kind: call, from: list_destroy, to: node_free_all }
+  - { kind: call, from: node_free_all, to: node_free_all }
+  - { kind: call, from: node_sum, to: node_sum }
+  - { kind: call, from: list_push_front, to: node_new }
+  - { kind: call, from: list_push_back, to: list_last }
+  - { kind: call, from: list_push_back, to: node_new }
+  - { kind: call, from: list_sum, to: node_sum }
+notes: >-
+  Three recursive functions (fill, node_free_all, node_sum), each a loop on itself. main calls list_push_back at two
+  call sites (label "2"); the call inside the while condition counts once. list_create and list_pop_front only call
+  library functions. External calls (malloc, free, abort, printf, putchar) are hidden by default.

@@ -1,0 +1,35 @@
+kind: c.struct
+source: original
+nodes:
+  - name: HashFn
+    kind: typedef
+  - name: Visitor
+    kind: typedef
+  - name: HashTable
+    kind: struct
+    stereotypes: [opaque]
+    attributes: ['- buckets: Entry**', '- capacity: size_t', '- count: size_t']
+    operations:
+      - '- hash(key: const char*): unsigned long'
+      - '+ hashtable_create(capacity: size_t, hash: HashFn): HashTable*'
+      - '+ hashtable_destroy(t: HashTable*): void'
+      - '+ hashtable_put(t: HashTable*, key: const char*, value: int): int'
+      - '+ hashtable_find(t: const HashTable*, key: const char*, out: int*): int'
+      - '+ hashtable_count(t: const HashTable*): size_t'
+      - '+ hashtable_foreach(t: const HashTable*, visit: Visitor, ctx: void*): void'
+      - '- hashtable_slot(t: const HashTable*, key: const char*): size_t'
+  - name: Entry
+    kind: struct
+    attributes: ['- key: char*', '- value: int', '- next: struct entry*']
+    operations: ['- entry_find(e: Entry*, key: const char*): Entry*']
+edges:
+  - { kind: association, from: HashTable, to: Entry, role: buckets, multiplicity: '*' }
+  - { kind: association, from: Entry, to: Entry, role: next, multiplicity: '0..1' }
+notes: >-
+  HashFn and Visitor are typedefs of function pointers: typedef nodes, with no compartments listed. HashTable is
+  opaque (typedef in hashtable.h, struct hashtable in hashtable.c). Its hash field is a function pointer written
+  inline, so it is an operation (flag fn-pointer), private because the struct is in the .c. Entry is "typedef struct
+  entry {...} Entry" (one node, alias entry); next keeps the spelling of the source (struct entry*). buckets is
+  Entry**, a pointer to many, hence "*". HashTable uses HashFn and Visitor only in parameters (dependencies, hidden
+  by default). hash_djb2 starts with "hash", not with the type name "hashtable", so it is not an operation; copy_key
+  and the functions in main.c belong to no type.

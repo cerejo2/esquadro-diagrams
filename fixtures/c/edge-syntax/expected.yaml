@@ -1,0 +1,11 @@
+kind: c.struct
+source: original
+nodes:
+  - name: gauge
+    kind: struct
+    attributes: ['- level: int']
+    operations: ['+ gauge_level(g: struct gauge*): int', '+ gauge_double(g: struct gauge*): int']
+edges: []
+notes: >-
+  The same file as the call graph case. struct gauge is defined in a .c, so its field is private. Both functions take
+  a struct gauge* and start with the type name, so they are operations despite the syntax errors around them.

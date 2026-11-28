@@ -1,0 +1,32 @@
+kind: c.callgraph
+source: original
+options:
+  showMain: true
+nodes:
+  - { name: main, kind: function }
+  - { name: dice_seed, kind: function }
+  - { name: next_random, kind: function }
+  - { name: dice_roll, kind: function }
+  - { name: dice_fill, kind: function }
+  - { name: sum_from, kind: function }
+  - { name: stats_mean, kind: function }
+  - { name: stats_max, kind: function }
+  - { name: stats_histogram, kind: function }
+  - { name: print_bar, kind: function }
+  - { name: report_print, kind: function }
+edges:
+  - { kind: call, from: main, to: dice_seed }
+  - { kind: call, from: main, to: dice_fill, label: '2' }
+  - { kind: call, from: main, to: report_print, label: '2' }
+  - { kind: call, from: dice_fill, to: dice_roll }
+  - { kind: call, from: dice_roll, to: next_random }
+  - { kind: call, from: stats_mean, to: sum_from }
+  - { kind: call, from: sum_from, to: sum_from }
+  - { kind: call, from: report_print, to: stats_histogram }
+  - { kind: call, from: report_print, to: print_bar }
+  - { kind: call, from: report_print, to: stats_mean }
+  - { kind: call, from: report_print, to: stats_max }
+notes: >-
+  Labels count call sites, not run-time calls: print_bar and dice_roll sit inside loops but appear once. sum_from is
+  recursive. Calls cross module folders (main.c -> dice/, report/ -> stats/); the group of each function node is its
+  file. External calls (strtoul, puts, printf, putchar) are hidden by default.

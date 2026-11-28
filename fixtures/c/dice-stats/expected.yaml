@@ -1,0 +1,31 @@
+kind: c.include
+source: original
+nodes:
+  - { name: main.c, kind: source-file }
+  - { name: dice/dice.c, kind: source-file }
+  - { name: stats/stats.c, kind: source-file }
+  - { name: report/report.c, kind: source-file }
+  - { name: common.h, kind: header-file }
+  - { name: dice/dice.h, kind: header-file }
+  - { name: stats/stats.h, kind: header-file }
+  - { name: report/report.h, kind: header-file }
+edges:
+  - { kind: include, from: main.c, to: common.h }
+  - { kind: include, from: main.c, to: dice/dice.h }
+  - { kind: include, from: main.c, to: stats/stats.h }
+  - { kind: include, from: main.c, to: report/report.h }
+  - { kind: include, from: dice/dice.h, to: common.h }
+  - { kind: include, from: dice/dice.c, to: dice/dice.h }
+  - { kind: include, from: dice/dice.c, to: common.h }
+  - { kind: include, from: stats/stats.h, to: common.h }
+  - { kind: include, from: stats/stats.c, to: stats/stats.h }
+  - { kind: include, from: report/report.h, to: stats/stats.h }
+  - { kind: include, from: report/report.c, to: report/report.h }
+  - { kind: include, from: report/report.c, to: stats/stats.h }
+notes: >-
+  File nodes are named by their path inside input/, and each "..." include is resolved from the folder of the file
+  that contains it ("../common.h" from dice/ is common.h; "dice.h" from dice/ is dice/dice.h). main.c includes
+  common.h twice: one edge per pair of files, not per line. dice/dice.c and report/report.c also include a header that
+  they already get through another one (common.h via dice.h, stats.h via report.h); those are direct lines, so they
+  are edges. Three headers use #ifndef guards and report.h uses #pragma once; there are no cycles. <stdio.h>,
+  <stdlib.h> and <limits.h> are external and hidden by default.

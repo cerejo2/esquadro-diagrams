@@ -1,0 +1,39 @@
+kind: c.struct
+source: original
+nodes:
+  - name: ItemKind
+    kind: c-enum
+    stereotypes: [enumeration]
+    attributes: ['ITEM_NUMBER = 1', ITEM_REAL, ITEM_TEXT]
+  - name: Payload
+    kind: union
+    attributes: ['+ number: int', '+ real: double', '+ text: char[8]']
+  - name: Item
+    kind: struct
+    attributes: ['+ id: unsigned int', '+ kind: enum ItemKind', '+ payload: union Payload']
+  - name: RingStatus
+    kind: c-enum
+    stereotypes: [enumeration]
+    attributes: [RING_OK, RING_FULL, RING_EMPTY]
+  - name: Ring
+    kind: struct
+    attributes: ['+ slots: Item[RING_CAPACITY]', '+ head: size_t', '+ count: size_t']
+    operations:
+      - '+ ring_init(r: Ring*): void'
+      - '+ ring_push(r: Ring*, item: Item): RingStatus'
+      - '+ ring_pop(r: Ring*, out: Item*): RingStatus'
+      - '+ ring_count(r: const Ring*): size_t'
+      - '+ ring_is_full(r: const Ring*): int'
+      - '- ring_index(r: const Ring*, offset: size_t): size_t'
+edges:
+  - { kind: composition, from: Ring, to: Item, role: slots, multiplicity: RING_CAPACITY }
+  - { kind: composition, from: Item, to: Payload, role: payload, multiplicity: '1' }
+  - { kind: association, from: Item, to: ItemKind, role: kind, multiplicity: '1' }
+notes: >-
+  Item and Ring are typedefs of anonymous structs and RingStatus a typedef of an anonymous enum: each is one node named
+  after the typedef. ItemKind and Payload have only a tag. Enum constants are listed by name, with "= value" when the
+  source gives one. All types are defined in ring.h, so their fields are public. Ring.slots is an array of Item, a
+  composition whose multiplicity is the macro name (macros are not expanded); Item.payload is a union held by value,
+  composition 1; Item.kind holds an enum value, an association 1 (like a Java field of enum type). RingStatus only
+  appears as a return type (a dependency, hidden by default). describe in main.c takes an Item* but its name does not
+  start with "Item", so Item has no operations; main belongs to no type.

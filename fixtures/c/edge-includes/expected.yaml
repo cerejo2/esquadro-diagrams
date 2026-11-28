@@ -1,0 +1,17 @@
+kind: c.include
+source: original
+nodes:
+  - { name: app.c, kind: source-file }
+  - { name: loop_a.h, kind: header-file }
+  - { name: loop_b.h, kind: header-file }
+  - { name: self.h, kind: header-file }
+edges:
+  - { kind: include, from: app.c, to: loop_a.h }
+  - { kind: include, from: loop_a.h, to: loop_b.h }
+  - { kind: include, from: loop_b.h, to: loop_a.h }
+  - { kind: include, from: self.h, to: self.h }
+notes: >-
+  loop_a.h and loop_b.h include each other and self.h includes itself: two cycles, each a warn diagnostic. The guards
+  and #pragma once stop the compiler from looping, but the cycle is still in the code. "missing.h" is not a project
+  file and <stdlib.h> is a system header: both are externals, hidden by default. #include CONFIG_HEADER names a
+  macro, which is not expanded, so it gives an info diagnostic and no edge.

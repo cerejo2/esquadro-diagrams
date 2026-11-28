@@ -1,0 +1,17 @@
+kind: c.callgraph
+source: original
+nodes:
+  - { name: main, kind: function }
+  - { name: add, kind: function }
+  - { name: mul, kind: function }
+  - { name: print_line, kind: function }
+  - { name: calculator_apply, kind: function }
+  - { name: run_twice, kind: function }
+edges:
+  - { kind: call, from: main, to: add }
+  - { kind: call, from: main, to: calculator_apply }
+  - { kind: call, from: main, to: run_twice }
+notes: >-
+  main -> add goes through the local pick, which is assigned add directly: an edge with confidence 0.5. The calls
+  through the fields c->combine and c->log, and through the parameter op, have no known target, so they become info
+  diagnostics. Passing add to run_twice is not a call. mul and print_line are only stored in fields.

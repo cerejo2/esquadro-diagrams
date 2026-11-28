@@ -1,0 +1,17 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Counter
+    kind: struct
+    stereotypes: [opaque]
+    operations:
+      - '+ counter_new(start: int): Counter*'
+      - '+ counter_free(c: Counter*): void'
+      - '+ counter_next(c: Counter*): int'
+      - '+ counter_peek(c: Counter*): int'
+edges: []
+notes: >-
+  No file defines a function or the body of struct counter: there are only prototypes and forward declarations.
+  Counter is declared in api.h and never defined, so it is opaque, with no fields. Its operations come from the
+  prototypes: three in api.h and counter_peek in decls.c, which has no definition anywhere. clamp_value and
+  helper_count take no Counter.

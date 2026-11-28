@@ -1,0 +1,16 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Entry
+    kind: struct
+    attributes:
+      - '+ info: struct stat'
+      - '+ modified: struct tm*'
+      - '+ stream: FILE*'
+      - '+ next: struct entry*'
+    operations: ['+ entry_size(e: Entry*): int']
+edges:
+  - { kind: association, from: Entry, to: Entry, role: next, multiplicity: '0..1' }
+notes: >-
+  struct stat, struct tm and FILE come from the C library: the project only names them, so they are not nodes, even
+  though stat_print and tm_year_of take them and start with their names. next points to the type itself.

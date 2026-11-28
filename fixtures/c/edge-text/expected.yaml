@@ -1,0 +1,9 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Medida
+    kind: struct
+    attributes: ['+ valor: int', '+ nome: const char*']
+    operations: ['+ medida_valor(m: const Medida*): int']
+edges: []
+notes: The same files as the call graph case. The BOM, the CRLF line ends and the accents change nothing.

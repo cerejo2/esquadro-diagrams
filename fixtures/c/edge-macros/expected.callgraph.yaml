@@ -1,0 +1,15 @@
+kind: c.callgraph
+source: original
+nodes:
+  - { name: main, kind: function }
+  - { name: trace_line, kind: function }
+  - { name: area_of, kind: function }
+  - { name: bigger_area, kind: function }
+edges:
+  - { kind: call, from: main, to: bigger_area }
+  - { kind: call, from: bigger_area, to: area_of, label: '2' }
+notes: >-
+  Function-like macros are not expanded (PROMPT.md §7.2). TRACE("...") would call trace_line after expansion, but
+  the analyzer only sees a call to TRACE, so neither main nor area_of has an edge to trace_line. SQUARE, TRACE and
+  MAX_OF are calls to names that are not functions of the project: external nodes in the "macro" group, hidden by
+  default. The two calls to area_of are arguments of MAX_OF and still count as call sites, hence the label 2.

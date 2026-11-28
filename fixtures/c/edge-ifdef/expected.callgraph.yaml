@@ -1,0 +1,16 @@
+kind: c.callgraph
+source: original
+nodes:
+  - { name: main, kind: function }
+  - { name: sensor_read, kind: function }
+  - { name: read_raw, kind: function }
+  - { name: fast_read, kind: function }
+  - { name: slow_read, kind: function }
+edges:
+  - { kind: call, from: main, to: sensor_read }
+  - { kind: call, from: sensor_read, to: read_raw }
+  - { kind: call, from: read_raw, to: fast_read }
+  - { kind: call, from: read_raw, to: slow_read }
+notes: >-
+  read_raw is defined once in each branch of #ifdef FAST_READ, in the same file. It is one node, and the calls of
+  both branches leave from it, because every branch is analysed.

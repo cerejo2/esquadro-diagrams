@@ -1,0 +1,13 @@
+kind: c.callgraph
+source: original
+nodes:
+  - { name: gauge_level, kind: function }
+  - { name: broken, kind: function }
+  - { name: gauge_double, kind: function }
+  - { name: main, kind: function }
+edges:
+  - { kind: call, from: gauge_double, to: gauge_level }
+  - { kind: call, from: main, to: gauge_double }
+notes: >-
+  gauge_level has no semicolon after its return and broken has no closing parenthesis in its parameter list. Each
+  error is a diagnostic with its line, and the functions after them are still found.

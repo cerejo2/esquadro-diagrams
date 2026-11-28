@@ -1,0 +1,18 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Calculator
+    kind: struct
+    attributes: ['+ last: int']
+    operations:
+      - '+ combine(left: int, right: int): int'
+      - '+ log(line: const char*): void'
+      - '+ describe(code: int): const char*'
+      - '+ calculator_apply(c: Calculator*, a: int, b: int): int'
+  - { name: BinaryOp, kind: typedef }
+  - { name: Logger, kind: typedef }
+edges: []
+notes: >-
+  BinaryOp is a typedef of a pointer to function and Logger a typedef of a function type: both are typedef nodes.
+  Fields that hold a pointer to function are operations with the fn-pointer flag, whether they use a typedef
+  (BinaryOp combine; Logger *log;) or write the pointer inline (describe). The signature comes from the typedef.

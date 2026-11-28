@@ -1,0 +1,13 @@
+kind: c.callgraph
+source: original
+nodes:
+  - { name: twice, kind: function }
+  - { name: sum3, kind: function }
+  - { name: main, kind: function }
+edges:
+  - { kind: call, from: main, to: sum3 }
+  - { kind: call, from: main, to: twice }
+  - { kind: call, from: sum3, to: twice }
+notes: >-
+  twice and sum3 are K&R definitions: the parameter names are in the list and their types in declarations between
+  the closing parenthesis and the body. They are still functions of the project.

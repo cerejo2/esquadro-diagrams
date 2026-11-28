@@ -1,0 +1,39 @@
+kind: c.callgraph
+source: original
+options:
+  showMain: true
+nodes:
+  - { name: main, kind: function }
+  - { name: print_entry, kind: function }
+  - { name: hash_length, kind: function }
+  - { name: hash_djb2, kind: function }
+  - { name: copy_key, kind: function }
+  - { name: entry_find, kind: function }
+  - { name: hashtable_slot, kind: function }
+  - { name: hashtable_create, kind: function }
+  - { name: hashtable_destroy, kind: function }
+  - { name: hashtable_put, kind: function }
+  - { name: hashtable_find, kind: function }
+  - { name: hashtable_count, kind: function }
+  - { name: hashtable_foreach, kind: function }
+edges:
+  - { kind: call, from: main, to: hash_length }
+  - { kind: call, from: main, to: hashtable_create }
+  - { kind: call, from: main, to: hashtable_put, label: '3' }
+  - { kind: call, from: main, to: hashtable_find }
+  - { kind: call, from: main, to: hashtable_foreach }
+  - { kind: call, from: main, to: hashtable_count }
+  - { kind: call, from: main, to: hashtable_destroy }
+  - { kind: call, from: hashtable_put, to: hashtable_slot }
+  - { kind: call, from: hashtable_put, to: entry_find }
+  - { kind: call, from: hashtable_put, to: copy_key }
+  - { kind: call, from: hashtable_find, to: entry_find }
+  - { kind: call, from: hashtable_find, to: hashtable_slot }
+  - { kind: call, from: entry_find, to: entry_find }
+notes: >-
+  Three calls go through function pointers. main -> hash_length is an edge (confidence 0.5): pick is a local assigned
+  the function name directly and then called. hashtable_slot calls t->hash, a struct field set from a parameter in
+  hashtable_create, and hashtable_foreach calls its parameter visit: neither target is known, so no edge (a
+  diagnostic instead). main passes hash_djb2 and print_entry as arguments, which are not calls, so those two functions
+  have no incoming edges. entry_find is recursive. External calls (malloc, calloc, free, strlen, strcpy, strcmp,
+  printf) are hidden by default.

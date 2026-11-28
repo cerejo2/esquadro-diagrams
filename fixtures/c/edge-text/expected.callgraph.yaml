@@ -1,0 +1,12 @@
+kind: c.callgraph
+source: original
+nodes:
+  - { name: main, kind: function }
+  - { name: medida_valor, kind: function }
+  - { name: dobro_ação, kind: function }
+edges:
+  - { kind: call, from: main, to: medida_valor }
+  - { kind: call, from: medida_valor, to: dobro_ação }
+notes: >-
+  Both files start with a UTF-8 byte order mark, use CRLF line ends and have accented letters in comments, strings
+  and one identifier (C99 allows extended characters in names).

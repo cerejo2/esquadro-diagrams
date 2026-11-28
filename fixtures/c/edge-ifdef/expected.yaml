@@ -1,0 +1,12 @@
+kind: c.struct
+source: original
+nodes:
+  - name: Sensor
+    kind: struct
+    attributes: ['+ sample: long', '+ channel: int']
+    operations: ['+ sensor_read(s: Sensor*): int']
+edges: []
+notes: >-
+  sample is declared in both branches of #ifdef WIDE_SAMPLES with different types. Every branch is analysed and a
+  field that appears twice is kept once, from the first branch. fast_read, slow_read and read_raw take a Sensor* but
+  their names do not start with the type name, so they are not operations.
