@@ -64,6 +64,28 @@ Every node and edge carries evidence (the rule and `file:line`), so the UI can e
 
 Private cases may differ from their course references only where the drawing follows another convention than §7.1. The accepted differences sit next to each private case in `known.yaml`, outside the repository.
 
+## C analyzer
+
+`src/analyzers/c/` reads every file once (`collect.ts`) and builds three diagrams:
+
+- `c.struct`: structs, unions and enums as boxes. A function belongs to an abstract data type when its first parameter is `T*` or it returns `T*` and its name starts with the type name; static functions are private. `resolve.ts` follows typedef chains so `Tray *`, `NodePtr` and `struct node *` reach the same type.
+- `c.callgraph`: one node per defined function, `call` edges labelled with the number of call sites, library functions as hidden externals grouped by library. Calls through a field, a parameter or an expression get no edge and an info diagnostic. A name defined in two files becomes `f (file.c)`, and an ambiguous call gives a warning instead of a guess.
+- `c.include`: one edge per `#include "x.h"`, resolved from the including file's folder first, and a warning for every include cycle.
+
+Every `#if` branch is analysed and macros are not expanded; an info diagnostic says so.
+
+## Bash analyzer
+
+`src/analyzers/bash/` builds a call graph (functions, one `script` node per file for its top-level code, `source` and `trap` edges), a dependency diagram (external commands and the files a script reads or writes) and a flowchart with ISO 5807 shapes. The flowchart merges runs of plain commands into one process block of at most three lines, turns `if`, `case`, loops and `&&`/`||` into decisions, and writes decisions as questions (`labels.ts`) in Portuguese or English. A call to a project function is a subroutine, never expanded inline.
+
+## SQL analyzer
+
+`src/analyzers/sql/` does not use tree-sitter: generic SQL grammars handle T-SQL batches, `[names]` and `IDENTITY` poorly. A hand-written tokenizer and a tolerant recursive-descent parser read `CREATE TABLE`, `ALTER TABLE ... ADD` and `CREATE VIEW` in T-SQL, MySQL, PostgreSQL and SQLite, and skip everything else up to the next `;` or `GO`. `resolve.ts` links each foreign key to its table and columns. `build.ts` draws the relational, SSMS and crow's foot diagrams; `chen.ts` undoes the ER-to-relational mapping taught in FBD (weak entities from a PK that contains an FK, M:N relationships from tables whose PK is two FKs).
+
+## Shared rules
+
+Syntax errors are found with an iterative walk (`syntaxDiagnostics`), because a stack overflow that unwinds through web-tree-sitter's WASM frames leaves the parser unusable for the next file.
+
 ## Tooling
 
 - **TypeScript 7** (the native compiler), `strict` plus `noUncheckedIndexedAccess`. One `tsconfig.json` covers `src/` and `scripts/`, so `npx tsc --noEmit` checks everything.
