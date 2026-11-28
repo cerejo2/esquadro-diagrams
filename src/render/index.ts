@@ -83,7 +83,16 @@ export function buildScene(p: Prepared, layout: Layout): Scene {
       text = [...text, ...att.text];
     }
     if (rough) body = roughen(body, seedOf(n.id), rough);
-    nodes.push({ id: n.id, box, body, text, aria: shape.aria, rank: rk.get(n.id) ?? 0 });
+    const ref = n.ref ?? n.evidence?.find((e) => e.ref)?.ref;
+    nodes.push({
+      id: n.id,
+      box,
+      body,
+      text,
+      aria: shape.aria,
+      rank: rk.get(n.id) ?? 0,
+      source: ref ? `${ref.file}:${ref.line}` : undefined,
+    });
   }
 
   const trunks = new Map(layout.trunks.map((t) => [t.id, t]));

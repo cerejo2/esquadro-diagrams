@@ -55,6 +55,8 @@ export interface SceneNode {
   aria: string;
   /** Row of the drawing it belongs to, for the entrance stagger. */
   rank: number;
+  /** Where it was declared ("shapes/Circle.java:3"), shown on hover. */
+  source?: string;
 }
 
 export interface SceneEdge {
