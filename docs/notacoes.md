@@ -89,6 +89,7 @@ Routing rules:
 | Identifying relationship | double diamond, same inset             |
 | Attribute                | ellipse about 80 × 40 px, text centred, regular ≈ 11 px; two-word names wrap to two lines |
 | Key attribute            | underlined text                        |
+| Multivalued attribute    | double ellipse, inner border inset like the weak entity (standard Chen; not in the measured references) |
 | Total participation      | double line, 4 px between the strokes  |
 | Cardinality              | `1`, `N`, `M` in bold ≈ 11 px, next to the entity end of the line, 5–8 px off the line |
 

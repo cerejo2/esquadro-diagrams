@@ -37,7 +37,8 @@ export type MemberFlag =
   | 'unique'
   | 'notnull'
   | 'identity'
-  | 'partial-key';
+  | 'partial-key'
+  | 'multivalued';
 
 export interface Member {
   name: string;

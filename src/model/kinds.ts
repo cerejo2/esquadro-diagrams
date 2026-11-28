@@ -37,7 +37,7 @@ export const EDGE_KINDS: Exhaustive<EdgeKind, typeof edgeKinds> = edgeKinds;
 // prettier-ignore
 const memberFlags = [
   'static', 'abstract', 'final', 'ctor', 'getter', 'setter', 'override', 'main',
-  'fn-pointer', 'pk', 'fk', 'unique', 'notnull', 'identity', 'partial-key',
+  'fn-pointer', 'pk', 'fk', 'unique', 'notnull', 'identity', 'partial-key', 'multivalued',
 ] as const;
 export const MEMBER_FLAGS: Exhaustive<MemberFlag, typeof memberFlags> = memberFlags;
 

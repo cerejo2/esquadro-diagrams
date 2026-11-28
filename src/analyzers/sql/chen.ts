@@ -4,9 +4,12 @@
 //   1. PK equal to an FK to another table's PK, nothing else  → specialisation (isa) of that table;
 //   2. PK made only of two or more FKs                         → M:N relationship (diamond), the
 //      other columns are its attributes; M for the FK of the first PK column, then N, P, Q;
-//   3. PK = FK(s) plus own columns                             → weak entity with an identifying
+//   3. PK = one FK plus one own column, nothing else, and no table references it
+//                                                              → multivalued attribute of the owner
+//      (TELEFONE(func, numero) is how FBD maps a multivalued attribute);
+//   4. PK = FK(s) plus own columns                             → weak entity with an identifying
 //      relationship to each owner; the own PK columns are the partial key;
-//   4. otherwise                                               → entity.
+//   5. otherwise                                               → entity.
 // Every FK not used above becomes a 1:N relationship (1:1 if the FK is UNIQUE), with total
 // participation of the FK side when the FK is NOT NULL. Diamonds take the constraint name
 // (the associative table's name in lower case for M:N), or stay empty for the user to fill in.
@@ -33,7 +36,8 @@ type Shape =
   | { kind: 'entity' }
   | { kind: 'isa'; parents: ResolvedFk[] }
   | { kind: 'mn'; parts: ResolvedFk[] }
-  | { kind: 'weak'; owners: ResolvedFk[] };
+  | { kind: 'weak'; owners: ResolvedFk[] }
+  | { kind: 'multivalued'; owner: ResolvedFk; column: string };
 
 const MN_LETTERS = ['M', 'N', 'P', 'Q', 'R', 'S'];
 
@@ -43,7 +47,8 @@ function pkPosition(t: Table, r: ResolvedFk): number {
   return positions.length ? Math.min(...positions) : Number.MAX_SAFE_INTEGER;
 }
 
-export function classify(t: Table, fks: readonly ResolvedFk[]): Shape {
+/** `referenced`: some other table has an FK to this one, so it cannot fold into its owner. */
+export function classify(t: Table, fks: readonly ResolvedFk[], referenced = false): Shape {
   if (!t.pk.length) return { kind: 'entity' };
   const inPk = fks.filter((r) => subsetOf(r.fk.columns, t.pk));
   if (!inPk.length) return { kind: 'entity' };
@@ -63,6 +68,10 @@ export function classify(t: Table, fks: readonly ResolvedFk[]): Shape {
     const parts = [...inPk].sort((a, b) => pkPosition(t, a) - pkPosition(t, b));
     return { kind: 'mn', parts };
   }
+  const owner = inPk[0]!;
+  const onlyKeys = t.columns.length === covered.size + 1;
+  if (own.length === 1 && inPk.length === 1 && fks.length === 1 && owner.to !== t && onlyKeys && !referenced)
+    return { kind: 'multivalued', owner, column: own[0]! };
   if (own.length) return { kind: 'weak', owners: inPk };
   return { kind: 'entity' };
 }
@@ -76,11 +85,19 @@ export function buildChen(s: ResolvedSchema): Pick<DiagramModel, 'nodes' | 'edge
   const ids = new Map<Table, string>();
   const shapes = new Map<Table, Shape>();
 
+  const referenced = new Set<Table>();
+  for (const list of s.fksOf.values()) for (const r of list) if (r.to !== r.from) referenced.add(r.to);
+  for (const t of s.tables) shapes.set(t, classify(t, s.fksOf.get(t) ?? [], referenced.has(t)));
+  // A diamond cannot hold an attribute ellipse of this kind: keep those tables as weak entities.
+  for (const [t, sh] of shapes)
+    if (sh.kind === 'multivalued' && shapes.get(sh.owner.to)?.kind === 'mn')
+      shapes.set(t, { kind: 'weak', owners: [sh.owner] });
+
   // Pass 1: one node per table (entity, weak entity or M:N diamond).
   for (const t of s.tables) {
     const fks = s.fksOf.get(t) ?? [];
-    const shape = classify(t, fks);
-    shapes.set(t, shape);
+    const shape = shapes.get(t)!;
+    if (shape.kind === 'multivalued') continue;
     const kind: NodeKind = shape.kind === 'mn' ? 'relationship' : shape.kind === 'weak' ? 'weak-entity' : 'entity';
     const fkCols = fkColumns(fks);
     const attributes: Member[] = [];
@@ -124,6 +141,23 @@ export function buildChen(s: ResolvedSchema): Pick<DiagramModel, 'nodes' | 'edge
     nodes.push(n);
     if (!t.pk.length)
       diagnostics.push(diagnostic('info', `table ${t.name} has no primary key; drawn as an entity`, t.ref));
+  }
+
+  // Multivalued attributes join their owner's attributes.
+  for (const t of s.tables) {
+    const shape = shapes.get(t)!;
+    if (shape.kind !== 'multivalued') continue;
+    const owner = nodes.find((n) => n.id === ids.get(shape.owner.to));
+    if (!owner) continue;
+    const col = t.columns.find((c) => keyOf(c.name) === keyOf(shape.column));
+    owner.attributes!.push({ name: col?.name ?? shape.column, flags: ['multivalued'], ref: col?.ref ?? t.ref });
+    owner.evidence!.push(
+      evidence(
+        'chen.multivalued',
+        t.pkRef ?? t.ref,
+        `table ${t.name} holds the values of ${shape.column} (PK = FK + ${shape.column})`,
+      ),
+    );
   }
 
   const diamond = (kind: NodeKind, t: Table, r: ResolvedFk, rule: string, note: string): string => {
@@ -175,6 +209,7 @@ export function buildChen(s: ResolvedSchema): Pick<DiagramModel, 'nodes' | 'edge
   for (const t of s.tables) {
     const fks = s.fksOf.get(t) ?? [];
     const shape = shapes.get(t)!;
+    if (shape.kind === 'multivalued') continue;
     const self = ids.get(t)!;
     const used = new Set<ResolvedFk>();
 

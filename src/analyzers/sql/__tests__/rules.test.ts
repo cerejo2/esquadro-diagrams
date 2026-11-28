@@ -232,6 +232,36 @@ describe('sql.chen', () => {
     expect(edgeList(m)).toEqual(['participation sala->fica_em :N total', 'participation edificio->fica_em :1']);
   });
 
+  it('a table that is only an FK plus one value is a multivalued attribute of its owner', async () => {
+    const m = await analyze(
+      `
+      CREATE TABLE funcionario (nif INT PRIMARY KEY, nome TEXT);
+      CREATE TABLE telefone (func INT REFERENCES funcionario, numero VARCHAR(15), PRIMARY KEY (func, numero));
+    `,
+      'sql.chen',
+    );
+    expect(m.nodes.map((n) => `${n.kind}:${n.name}`)).toEqual(['entity:funcionario']);
+    expect(attrs(m, 'funcionario')).toEqual(['nif', 'nome', 'numero']);
+    expect(node(m, 'funcionario').attributes![2]!.flags).toEqual(['multivalued']);
+    expect(node(m, 'funcionario').evidence!.map((e) => e.rule)).toContain('chen.multivalued');
+    expect(m.edges).toEqual([]);
+  });
+
+  it('the same shape stays a weak entity when another table references it or it has more columns', async () => {
+    const m = await analyze(
+      `
+      CREATE TABLE funcionario (nif INT PRIMARY KEY);
+      CREATE TABLE telefone (func INT REFERENCES funcionario, numero VARCHAR(15), PRIMARY KEY (func, numero));
+      CREATE TABLE chamada (id INT PRIMARY KEY, func INT, numero VARCHAR(15),
+        FOREIGN KEY (func, numero) REFERENCES telefone);
+      CREATE TABLE email (func INT REFERENCES funcionario, endereco TEXT, verificado BIT, PRIMARY KEY (func, endereco));
+    `,
+      'sql.chen',
+    );
+    expect(node(m, 'telefone').kind).toBe('weak-entity');
+    expect(node(m, 'email').kind).toBe('weak-entity');
+  });
+
   it('a PK that is also the FK to another PK, with no more columns, is a specialisation (isa)', async () => {
     const m = await analyze(
       `
