@@ -90,16 +90,24 @@ describe('subroutines', () => {
     expect(nodesOf(m, 'process')).toEqual([]);
   });
 
-  it('ends the path after a function that always exits', async () => {
+  it('ends the path after a function that always exits, with its exit status', async () => {
     const m = await flow('die() {\n  echo "$1" >&2\n  exit 1\n}\n[[ -r cfg ]] || die "no cfg"\necho ok\n');
     expect(arrows(m)).toEqual([
       'Início --> cfg pode ser lido?',
       'cfg pode ser lido? -[não]-> die',
+      'die --> Erro (exit 1)',
       'cfg pode ser lido? -[sim]-> Mostrar ok',
       'Mostrar ok --> Fim',
     ]);
     const die = nodesOf(m, 'subroutine')[0]!;
     expect(die.evidence!.map((e) => e.rule)).toEqual(['bash.flow.call', 'bash.flow.noreturn']);
+  });
+
+  it('writes Fim after a function that ends with exit 0, and no status when the exits differ', async () => {
+    const ok = await flow('done_() { echo bye; exit 0; }\ndone_\n');
+    expect(arrows(ok)).toContain('done_ --> Fim (exit 0)');
+    const mixed = await flow('stop() { if [[ -n $1 ]]; then exit 2; else exit 3; fi; }\nstop x\n');
+    expect(arrows(mixed)).toContain('stop --> Fim');
   });
 
   it('treats a function that exits only on one branch as returning', async () => {

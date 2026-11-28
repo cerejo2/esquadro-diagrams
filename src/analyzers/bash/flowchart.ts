@@ -327,6 +327,12 @@ class Flow {
       this.connect(ends, sub.id, 'bash.flow', ref);
       if (this.p.neverReturns(call)) {
         sub.evidence!.push(evidence('bash.flow.noreturn', call.ref, `${call.name} always ends the script`));
+        // The path ends here, so draw where it ends: `Erro (exit 2)` after a `die`-style call.
+        const code = exitCodeOf(call);
+        const word = code && code !== '0' ? (this.l === 'pt' ? 'Erro' : 'Error') : this.w.end;
+        const endLabel = `${word}${code ? ` (exit ${code})` : ''}`;
+        const t = this.add('terminator', `exit ${code ?? ''}`.trim(), endLabel, ref, 'bash.flow.noreturn');
+        this.connect([{ from: sub.id }], t.id, 'bash.flow', ref);
         return [];
       }
       return [{ from: sub.id }];
@@ -411,6 +417,20 @@ function mainCommand(s: Node): Node | undefined {
     return body ? mainCommand(body) : undefined;
   }
   return undefined;
+}
+
+/** The exit status a never-returning function ends with, when all its `exit N` agree. */
+function exitCodeOf(fn: BashFunction): string | undefined {
+  const codes = new Set<string>();
+  for (const def of fn.defs) {
+    for (const cmd of def.descendantsOfType('command')) {
+      if (!cmd || commandName(cmd) !== 'exit') continue;
+      const arg = commandArgs(cmd)[0];
+      codes.add(arg ? (literal(arg) ?? arg.text) : '');
+    }
+  }
+  const [only] = codes;
+  return codes.size === 1 && only ? only : undefined;
 }
 
 function blockLabel(lines: readonly string[]): string {
