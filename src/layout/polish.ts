@@ -167,27 +167,54 @@ export function components(ids: readonly string[], links: readonly [string, stri
 }
 
 /**
- * Packs laid-out components in rows, left to right, largest first, wrapping
- * when a row gets wider than the width that gives the whole drawing a 16:10 shape.
+ * Packs laid-out components in rows, left to right, largest first. Every row
+ * width from "one per row" to "all in one row" is tried, and the packing whose
+ * bounding box is closest to a 16:10 shape (the screen and the A4 landscape
+ * page) wins; ties go to the smaller area.
  */
-export function packComponents(parts: readonly Placement[], gap: number): Placement {
+export function packComponents(parts: readonly Placement[], gap: number, aspect = 1.6): Placement {
   const boxes = parts.map((p) => union([...p.values()]));
-  const area = boxes.reduce((s, b) => s + (b.width + gap) * (b.height + gap), 0);
-  const maxWidth = Math.max(Math.sqrt(area * 1.6), ...boxes.map((b) => b.width));
+  const pack = (maxWidth: number) => {
+    const at: { x: number; y: number }[] = [];
+    let x = 0;
+    let y = 0;
+    let rowHeight = 0;
+    let width = 0;
+    for (const b of boxes) {
+      if (x > 0 && x + b.width > maxWidth) {
+        x = 0;
+        y += rowHeight + gap;
+        rowHeight = 0;
+      }
+      at.push({ x, y });
+      width = Math.max(width, x + b.width);
+      x += b.width + gap;
+      rowHeight = Math.max(rowHeight, b.height);
+    }
+    return { at, width, height: y + rowHeight };
+  };
+  const widths = new Set<number>();
+  let sum = 0;
+  for (const b of boxes) {
+    sum += b.width;
+    widths.add(sum);
+    sum += gap;
+  }
+  let best: ReturnType<typeof pack> | undefined;
+  let bestCost = Infinity;
+  for (const w of [...widths].sort((a, b) => a - b)) {
+    const r = pack(Math.max(w, ...boxes.map((b) => b.width)) + 0.5);
+    const cost = Math.abs(Math.log(r.width / r.height / aspect)) + (r.width * r.height) / 1e9;
+    if (cost < bestCost - 1e-9) {
+      bestCost = cost;
+      best = r;
+    }
+  }
   const out: Placement = new Map();
-  let x = 0;
-  let y = 0;
-  let rowHeight = 0;
   parts.forEach((part, i) => {
     const b = boxes[i]!;
-    if (x > 0 && x + b.width > maxWidth) {
-      x = 0;
-      y += rowHeight + gap;
-      rowHeight = 0;
-    }
+    const { x, y } = best!.at[i]!;
     for (const [id, r] of part) out.set(id, { ...r, x: r.x - b.x + x, y: r.y - b.y + y });
-    x += b.width + gap;
-    rowHeight = Math.max(rowHeight, b.height);
   });
   return out;
 }
