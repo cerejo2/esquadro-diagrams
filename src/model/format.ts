@@ -13,7 +13,7 @@ export function formatAttribute(m: Member): string {
 /** `+ name(p: Type, q: Type): Return`; constructors have no return type. */
 export function formatOperation(m: Member): string {
   const vis = m.visibility ? `${m.visibility} ` : '';
-  const params = (m.params ?? []).map((p) => (p.type ? `${p.name}: ${p.type}` : p.name)).join(', ');
+  const params = (m.params ?? []).map((p) => (p.type ? (p.name ? `${p.name}: ${p.type}` : p.type) : p.name)).join(', ');
   const isCtor = m.flags?.includes('ctor');
   const ret = !isCtor && m.returns ? `: ${m.returns}` : '';
   return `${vis}${m.name}(${params})${ret}`;

@@ -1,5 +1,8 @@
 * text=auto eol=lf
 *.png binary
 *.wasm binary
-# Kept byte for byte: this case tests a BOM and CRLF line ends.
+# Kept byte for byte: these cases test a BOM and CRLF line ends.
 fixtures/java/edge-text/** -text
+fixtures/c/edge-text/** -text
+fixtures/bash/edge-crlf-bom/** -text
+fixtures/sql/edge-bom-crlf/** -text

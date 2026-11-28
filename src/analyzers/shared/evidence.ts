@@ -32,16 +32,19 @@ export function diagnostic(level: Diagnostic['level'], message: string, ref?: So
 export function syntaxDiagnostics(root: Node, file: string, limit = 20): Diagnostic[] {
   if (!root.hasError) return [];
   const out: Diagnostic[] = [];
-  const visit = (n: Node) => {
-    if (out.length >= limit) return;
+  // Iterative, in document order: a recursive walk can overflow the stack on deeply nested
+  // code, and an overflow that unwinds through web-tree-sitter's WASM frames breaks the parser.
+  const stack: Node[] = [root];
+  while (stack.length && out.length < limit) {
+    const n = stack.pop()!;
     if (n.isError || n.isMissing) {
       const what = n.isMissing ? `missing ${n.type}` : 'syntax error';
       out.push(diagnostic('error', `${what} near "${n.text.slice(0, 30)}"`, refOf(n, file)));
-      return;
+      continue;
     }
-    if (!n.hasError) return;
-    for (const c of n.children) if (c) visit(c);
-  };
-  visit(root);
+    if (!n.hasError) continue;
+    const kids = n.children;
+    for (let i = kids.length - 1; i >= 0; i--) if (kids[i]) stack.push(kids[i]!);
+  }
   return out;
 }
